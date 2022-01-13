@@ -15,6 +15,9 @@
 		{
 			"name": "Right_EasyTransfer",
 			"path": "Right_EasyTransfer"
+		},
+		{
+			"path": "Bronze"
 		}
 	]
 }
