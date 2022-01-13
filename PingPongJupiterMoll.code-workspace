@@ -7,6 +7,14 @@
 		{
 			"name": "RightTeensy",
 			"path": "RightTeensy"
+		},
+		{
+			"name": "Left_EasyTranfer",
+			"path": "Left_EasyTranfer"
+		},
+		{
+			"name": "Right_EasyTransfer",
+			"path": "Right_EasyTransfer"
 		}
 	]
 }
