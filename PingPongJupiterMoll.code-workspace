@@ -3,6 +3,10 @@
 		{
 			"name": "LeftTeensy",
 			"path": "LeftTeensy"
+		},
+		{
+			"name": "RightTeensy",
+			"path": "RightTeensy"
 		}
 	]
 }
