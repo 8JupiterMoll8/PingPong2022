@@ -15,7 +15,7 @@ private:
 
 public:
 	Reciver(RF24 &RADIO, const uint64_t ADRESS, const byte CHANNEL, ReciverData &RECIVER_DATA) : radio(RADIO),
-																								adress(CHANNEL),
+																								adress(ADRESS),
 																								channel(CHANNEL),
 																								reciverData(RECIVER_DATA)
 	{

@@ -16,7 +16,7 @@ private:
     elapsedMillis m_msec; // timer to end states 1 and 2
 
 public:
-	PeakDetector(int inputSensor):inputSensor(m_inputSensor)
+	PeakDetector(int inputSensor):m_inputSensor(inputSensor)
 	{}
 
 
