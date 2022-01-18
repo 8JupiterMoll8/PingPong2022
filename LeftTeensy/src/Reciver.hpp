@@ -56,7 +56,7 @@ public:
 
 		if (radio.available(&pipe))
 		{
-			Serial.println(reciverData.fsr);
+			//Serial.println(reciverData.fsr);
 
 			uint8_t bytes = radio.getPayloadSize();
 			radio.read(&reciverData, bytes);

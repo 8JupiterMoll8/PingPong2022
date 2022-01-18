@@ -22,6 +22,7 @@ const byte     CHANNEL {125};
 ReciverData racketData;
 Reciver reciver(radio, ADRESS, CHANNEL, racketData);
 
+
 PeakDetector racketPiezo(racketData.pz);
 
 
@@ -40,8 +41,22 @@ void setup()
 void loop()
 {
   reciver.loop();
-  //racketPiezo.loop();
-  //racketPiezo.getPeak();
-  //racketPiezo
+  racketPiezo.loop();
+
+
+ 
+
+if(racketPiezo.getHit())
+{
+    static int counter = 0;
+    Serial.println("counter2 :") ;
+    Serial.println(counter++) ;
+    racketPiezo.hitReleased();
+
+}
+    
+
+
+ 
 
 }

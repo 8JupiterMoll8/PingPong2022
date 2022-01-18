@@ -6,22 +6,40 @@
 class PeakDetector
 {
 private:
-	int m_thresholdMin     {60} ; // minimum reading, avoid noise and false starts
-    int m_peakTrackMillis  {12} ;
+	int m_thresholdMin     {5} ; // minimum reading, avoid noise and false starts
+    int m_peakTrackMillis  {10} ;
 	int m_aftershockMillis {25} ; // aftershocks & vibration reject
-	int m_inputSensor      { 0} ;
+	int &m_inputSensor ;
 
     int           m_state;// 0=idle, 1=looking for peak, 2=ignore aftershocks
     int           m_peak; // remember the highest reading
     elapsedMillis m_msec; // timer to end states 1 and 2
 
+
+	boolean ball ;
+	boolean *ptr = &ball;
+
 public:
-	PeakDetector(int inputSensor):m_inputSensor(inputSensor)
+	PeakDetector(int &inputSensor ):m_inputSensor(inputSensor)
+	                                            
 	{}
 
 
+   boolean getHit()
+   {
+	   return *ptr;
+
+   }
+
+   void hitReleased()
+   {
+	   *ptr = false;
+
+   }
+
 	void loop()
 	{
+		//Serial.println(m_inputSensor);
 		switch (m_state)
 		{
 
@@ -31,8 +49,8 @@ public:
 		case 0:
 			if (m_inputSensor > m_thresholdMin)
 			{
-				//Serial.print("begin peak track ");
-				//Serial.println(voltage);
+				Serial.print("begin peak track ");
+				Serial.println(m_inputSensor);
 				m_peak = m_inputSensor;
 				m_msec = 0;
 				m_state = 1;
@@ -48,8 +66,11 @@ public:
 			}
 			if (m_msec >= m_peakTrackMillis)
 			{
-				//Serial.print("peak = ");
-				//Serial.println(peak);
+				Serial.print("peak = ");
+				Serial.println(m_peak);
+			
+				*ptr = true;
+				
 				m_msec = 0;
 				m_state = 2;
 			}
@@ -60,11 +81,15 @@ public:
 		default:
 			if (m_inputSensor > m_thresholdMin)
 			{
+				
+					//*ptr = false;
 				m_msec = 0; // keep resetting timer if above threshold
 			}
 			else if (m_msec > m_aftershockMillis)
 			{
 				//usbMIDI.sendNoteOff(note, 0, channel);
+			    
+				//*ptr = false;
 				m_state = 0; // go back to idle when
 			}
 		}
