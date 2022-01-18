@@ -18,7 +18,7 @@
 
 RF24                   radio(21, 20); //CE pin, CSN pin
 const uint64_t ADRESS  {0xF0F0F0F0E1LL};
-const byte     CHANNEl {125};               
+const byte     CHANNEL {125};               
 ReciverData racketData;
 Reciver reciver(radio, ADRESS, CHANNEL, racketData);
 
@@ -40,7 +40,7 @@ void setup()
 void loop()
 {
   reciver.loop();
-  racketPiezo.loop();
+  //racketPiezo.loop();
   //racketPiezo.getPeak();
   //racketPiezo
 
