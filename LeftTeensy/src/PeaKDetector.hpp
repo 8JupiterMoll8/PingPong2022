@@ -7,7 +7,7 @@ class PeakDetector
 {
 private:
 	int m_thresholdMin     {5} ; // minimum reading, avoid noise and false starts
-    int m_peakTrackMillis  {10} ;
+    int m_peakTrackMillis  {3} ;
 	int m_aftershockMillis {25} ; // aftershocks & vibration reject
 	int &m_inputSensor ;
 
@@ -20,6 +20,7 @@ private:
 	boolean *ptr = &ball;
 
 public:
+    PeakDetector(){};
 	PeakDetector(int &inputSensor ):m_inputSensor(inputSensor)
 	                                            
 	{}
@@ -94,5 +95,31 @@ public:
 			}
 		}
 	}
+
+	void setInput(int input)
+	{ 
+		m_inputSensor = input;
+
+	}
+
+	void setThersholdMin(int thersholdMin)
+	{
+		m_thresholdMin = thersholdMin;
+
+	}
+
+	void setPeakTrackMillis(int peaktarckMillis)
+	{
+		m_peakTrackMillis = peaktarckMillis;
+
+	}
+
+	void setAfterSchockMillis(int afterschockMillis)
+	{
+		m_aftershockMillis = afterschockMillis;
+
+	}
+
+	
 };
 #endif
