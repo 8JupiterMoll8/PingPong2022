@@ -7,8 +7,7 @@ EasyTransfer ET;
 struct SEND_DATA_STRUCTURE{
   //put your variable definitions here for the data you want to send
   //THIS MUST BE EXACTLY THE SAME ON THE OTHER ARDUINO
-  int16_t blinks;
-  int16_t pause;
+  int16_t pz;
 };
 
 //give a name to the group of data
@@ -16,29 +15,30 @@ SEND_DATA_STRUCTURE mydata;
 
 void setup(){
   Serial.begin(9600);
+
+  // while(!Serial)
+  // {
+
+  // }
+  Serial8.begin(9600);
   //start the library, pass in the data details and the name of the serial port. Can be Serial, Serial1, Serial2, etc.
   ET.begin(details(mydata), &Serial8);
   
-  pinMode(13, OUTPUT);
+  pinMode(24, OUTPUT);
+  digitalWrite(24,LOW);
   
-  randomSeed(analogRead(0));
+ 
   
 }
 
 void loop(){
-  //this is how you access the variables. [name of the group].[variable name]
-  mydata.blinks = random(5);
-  mydata.pause = random(5);
-  //send the data
+
+  delay(100);
+  mydata.pz = 333;
   ET.sendData();
-  
-  //Just for fun, we will blink it out too
-   for(int i = mydata.blinks; i>0; i--){
-      digitalWrite(13, HIGH);
-      delay(mydata.pause * 100);
-      digitalWrite(13, LOW);
-      delay(mydata.pause * 100);
-    }
-  
-  delay(5000);
+  digitalWrite(24,HIGH);
+  delay(100);
+  mydata.pz = 0;
+  ET.sendData();
+  digitalWrite(24,LOW);
 }

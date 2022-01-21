@@ -1,9 +1,80 @@
 #include <Arduino.h>
+#include <SPI.h>
+#include "printf.h"
+#include "RF24.h"
+#include "Reciver.hpp"
+#include "ReciverData.hpp"
+//#include "Racket.hpp"
+#include "ResponsiveAnalogRead.h"
+#include <EasyTransfer.h>
 
-void setup() {
-  // put your setup code here, to run once:
+/*
+██████╗ ███████╗██████╗ ██╗  ██╗
+██╔══██╗██╔════╝╚════██╗██║  ██║
+██████╔╝█████╗   █████╔╝███████║
+██╔══██╗██╔══╝  ██╔═══╝ ╚════██║
+██║  ██║██║     ███████╗     ██║
+╚═╝  ╚═╝╚═╝     ╚══════╝     ╚═╝
+*/
+RF24 radio(21, 20); //CE pin, CSN pin
+const uint64_t ADRESS{0xF0F0F0F0D2LL};
+const byte CHANNEL{121};
+ReciverData racketData;
+Reciver reciver(radio, ADRESS, CHANNEL, racketData);
+/*
+███████╗████████╗
+██╔════╝╚══██╔══╝
+█████╗     ██║   
+██╔══╝     ██║   
+███████╗   ██║   
+╚══════╝   ╚═╝   
+ */
+EasyTransfer ET;
+
+struct SEND_DATA_STRUCTURE
+{
+  //put your variable definitions here for the data you want to send
+  //THIS MUST BE EXACTLY THE SAME ON THE OTHER ARDUINO
+  int16_t pz;
+};
+SEND_DATA_STRUCTURE mydata;
+void blink();
+
+void setup()
+{
+  Serial.begin(9600);
+ 
+  // while (!Serial )
+  // {
+  // }
+
+  Serial8.begin(9600); // Open Serial8 for EaesyTransfer
+
+  ET.begin(details(mydata), &Serial8);
+  reciver.setup();
+  pinMode(24,OUTPUT);
+
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop()
+{
+    blink();
+    reciver.loop();
+    mydata.pz = racketData.pz;
+    //Serial.println(racketData.pz);
+    ET.sendData();
+    // delay(100);
+}
+
+void blink()
+{
+  static elapsedMillis ms_blink;
+  if (ms_blink > 100)
+  {
+    static boolean toggle = true;
+    toggle = !toggle;
+    digitalWrite(24, toggle);
+
+    ms_blink = 0;
+  }
 }

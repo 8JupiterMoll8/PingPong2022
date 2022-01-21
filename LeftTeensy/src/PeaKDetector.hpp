@@ -46,8 +46,8 @@ public:
 		case 0:
 			if (m_inputSensor > m_thresholdMin)
 			{
-				Serial.print("begin peak track ");
-				Serial.println(m_inputSensor);
+				//Serial.print("begin peak track ");
+				//Serial.println(m_inputSensor);
 				m_peak = m_inputSensor;
 				m_msec = 0;
 				m_state = 1;
@@ -63,8 +63,8 @@ public:
 			}
 			if (m_msec >= m_peakTrackMillis)
 			{
-				Serial.print("peak = ");
-				Serial.println(m_peak);
+				//Serial.print("peak = ");
+				//Serial.println(m_peak);
 			
 				*ptr = true;
 				
@@ -81,15 +81,10 @@ public:
 
 			if (m_inputSensor > m_thresholdMin)
 			{
-				
-					//*ptr = false;
 				m_msec = 0; // keep resetting timer if above threshold
 			}
 			else if (m_msec > m_aftershockMillis)
-			{
-				//usbMIDI.sendNoteOff(note, 0, channel);
-			    
-				//*ptr = false;
+			{			    
 				m_state = 0; // go back to idle when
 			}
 		}
