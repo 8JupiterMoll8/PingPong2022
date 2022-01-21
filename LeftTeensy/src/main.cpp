@@ -5,8 +5,8 @@
 #include "Reciver.hpp"
 #include "ReciverData.hpp"
 #include "PeaKDetector.hpp"
-#include "Racket.hpp"
-
+//#include "Racket.hpp"
+#include "ResponsiveAnalogRead.h"
 
 /*
 ██████╗ ███████╗██████╗ ██╗  ██╗
@@ -16,23 +16,56 @@
 ██║  ██║██║     ███████╗     ██║
 ╚═╝  ╚═╝╚═╝     ╚══════╝     ╚═╝
 */
-
 RF24 radio(21, 20); //CE pin, CSN pin
-const uint64_t ADRESS  {0xF0F0F0F0E1LL};
-const byte CHANNEL {125};               
+const uint64_t ADRESS{0xF0F0F0F0E1LL};
+const byte CHANNEL{125};
 ReciverData racketData;
 Reciver reciver(radio, ADRESS, CHANNEL, racketData);
-
-//Racket
-PeakDetector racketPiezo(racketData.pz);
-Racket leftRacket(racketPiezo,racketData);
-
-//Tablet
-PeakDetector  tableLeftPiezos;
-PeakDetector  tableRightPiezos;
+/*
 
 
+██╗     ███████╗███████╗████████╗    ██████╗  █████╗  ██████╗██╗  ██╗███████╗████████╗
+██║     ██╔════╝██╔════╝╚══██╔══╝    ██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
+██║     █████╗  █████╗     ██║       ██████╔╝███████║██║     █████╔╝ █████╗     ██║   
+██║     ██╔══╝  ██╔══╝     ██║       ██╔══██╗██╔══██║██║     ██╔═██╗ ██╔══╝     ██║   
+███████╗███████╗██║        ██║       ██║  ██║██║  ██║╚██████╗██║  ██╗███████╗   ██║   
+╚══════╝╚══════╝╚═╝        ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
+*/                                                                                      
+PeakDetector l_racketPiezoDetector;
 
+
+/*
+██╗     ███████╗███████╗████████╗    ████████╗ █████╗ ██████╗ ██╗     ███████╗
+██║     ██╔════╝██╔════╝╚══██╔══╝    ╚══██╔══╝██╔══██╗██╔══██╗██║     ██╔════╝
+██║     █████╗  █████╗     ██║          ██║   ███████║██████╔╝██║     █████╗  
+██║     ██╔══╝  ██╔══╝     ██║          ██║   ██╔══██║██╔══██╗██║     ██╔══╝  
+███████╗███████╗██║        ██║          ██║   ██║  ██║██████╔╝███████╗███████╗
+╚══════╝╚══════╝╚═╝        ╚═╝          ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
+ */
+const int L_TABLE_PIEZO_PIN = A16;
+ResponsiveAnalogRead l_tablePiezoSmoother(L_TABLE_PIEZO_PIN, false);
+PeakDetector l_tablePiezoDetector;
+
+/*
+██████╗ ██╗ ██████╗ ██╗  ██╗████████╗    ████████╗ █████╗ ██████╗ ██╗     ███████╗
+██╔══██╗██║██╔════╝ ██║  ██║╚══██╔══╝    ╚══██╔══╝██╔══██╗██╔══██╗██║     ██╔════╝
+██████╔╝██║██║  ███╗███████║   ██║          ██║   ███████║██████╔╝██║     █████╗  
+██╔══██╗██║██║   ██║██╔══██║   ██║          ██║   ██╔══██║██╔══██╗██║     ██╔══╝  
+██║  ██║██║╚██████╔╝██║  ██║   ██║          ██║   ██║  ██║██████╔╝███████╗███████╗
+╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝          ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
+ */  
+const byte R_TABLE_PIEZO_PIN = A17;
+ResponsiveAnalogRead r_tablePiezoSmoother(R_TABLE_PIEZO_PIN, false);
+PeakDetector r_tablePiezoDetector;
+
+/*
+███████╗███████╗████████╗██╗   ██╗██████╗  ██╗██╗ 
+██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗██╔╝╚██╗
+███████╗█████╗     ██║   ██║   ██║██████╔╝██║  ██║
+╚════██║██╔══╝     ██║   ██║   ██║██╔═══╝ ██║  ██║
+███████║███████╗   ██║   ╚██████╔╝██║     ╚██╗██╔╝
+╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝      ╚═╝╚═╝ 
+ */                                                 
 void setup()
 {
   Serial.begin(9600);
@@ -41,27 +74,64 @@ void setup()
   }
 
   reciver.setup();
- 
+
+  l_racketPiezoDetector.setThersholdMin(5);
+  l_racketPiezoDetector.setPeakTrackMillis(10);
+  l_racketPiezoDetector.setAfterSchockMillis(25);
+
+  l_tablePiezoDetector.setThersholdMin(35);
+  l_tablePiezoDetector.setPeakTrackMillis(10);
+  l_tablePiezoDetector.setAfterSchockMillis(25);
+
+  r_tablePiezoDetector.setThersholdMin(55);
+  r_tablePiezoDetector.setPeakTrackMillis(10);
+  r_tablePiezoDetector.setAfterSchockMillis(25);
 }
 
+/*
+██╗      ██████╗  ██████╗ ██████╗  ██╗██╗ 
+██║     ██╔═══██╗██╔═══██╗██╔══██╗██╔╝╚██╗
+██║     ██║   ██║██║   ██║██████╔╝██║  ██║
+██║     ██║   ██║██║   ██║██╔═══╝ ██║  ██║
+███████╗╚██████╔╝╚██████╔╝██║     ╚██╗██╔╝
+╚══════╝ ╚═════╝  ╚═════╝ ╚═╝      ╚═╝╚═╝ 
+ */                                         
 void loop()
 {
+
   // The Reciver fetch constanly Data from the Transmitter
   // to be used by the objects, which depend on them
   reciver.loop();
 
-  //Racket
-  leftRacket.loop();
-
-  //Table
-  // tableRightPiezos.loop();
-  // tableRightPiezos.loop();
-  // tableLeftPiezos.setInput(analogRead(41));
-  // tableRightPiezos.setInput(analogRead(40));
-  Serial.println(analogRead(A17));
-  delay(10);
-
   
-  
+  l_tablePiezoSmoother.update();
+  r_tablePiezoSmoother.update();
 
+  l_tablePiezoDetector.loop();
+  r_tablePiezoDetector.loop();
+  l_racketPiezoDetector.loop();
+
+  l_tablePiezoDetector.setInput(l_tablePiezoSmoother.getValue());
+  r_tablePiezoDetector.setInput(r_tablePiezoSmoother.getValue());
+  l_racketPiezoDetector.setInput(racketData.pz);
+  
+  // Left TABLE
+  if (l_tablePiezoDetector.getHit())
+  {
+    Serial.println("Ball hits LEFT Table");
+    
+  }
+
+  // RIGHT TABLE
+  if (r_tablePiezoDetector.getHit())
+  {
+    Serial.println("Ball hits Right Table");
+    
+  }
+
+  // LEFT Racket
+  if(l_racketPiezoDetector.getHit())
+  {
+    Serial.println("Ball hits LEFT Racket");
+  }
 }

@@ -3,13 +3,14 @@
 #pragma once
 #include "Arduino.h"
 
+
 class PeakDetector
 {
 private:
 	int m_thresholdMin     {5} ; // minimum reading, avoid noise and false starts
     int m_peakTrackMillis  {3} ;
 	int m_aftershockMillis {25} ; // aftershocks & vibration reject
-	int &m_inputSensor ;
+	int m_inputSensor     {1} ;
 
     int           m_state;// 0=idle, 1=looking for peak, 2=ignore aftershocks
     int           m_peak; // remember the highest reading
@@ -21,8 +22,7 @@ private:
 
 public:
     PeakDetector(){};
-	PeakDetector(int &inputSensor ):m_inputSensor(inputSensor)
-	                                            
+	PeakDetector(int inputSensor ):m_inputSensor(inputSensor)                                            
 	{}
 
 
@@ -32,12 +32,8 @@ public:
 
    }
 
-   void hitReleased()
-   {
-	   *ptr = false;
-
-   }
-
+private: void hitReleased() { *ptr = false; }
+public:
 	void loop()
 	{
 		//Serial.println(m_inputSensor);
@@ -80,6 +76,9 @@ public:
 
 		// Ignore Aftershock state: wait for things to be quiet again.
 		default:
+		    
+			*ptr = false;
+
 			if (m_inputSensor > m_thresholdMin)
 			{
 				

@@ -30,8 +30,8 @@ public:
 	void loop()
 	{
 		m_ballDetector.loop();
-		//analog.update();
-		//m_ballDetector.setInput(analog.getValue());
+		analog.update();
+		m_ballDetector.setInput(analog.getValue());
 
 
 		if (m_ballDetector.getHit())
