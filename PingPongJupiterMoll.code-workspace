@@ -11,5 +11,11 @@
 		{
 			"path": "Bronze"
 		}
-	]
+	],
+	"settings": {
+		"files.associations": {
+			"memory": "cpp",
+			"random": "cpp"
+		}
+	}
 }

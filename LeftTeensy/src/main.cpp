@@ -116,7 +116,7 @@ void setup()
   ET.begin(details(mydata), &Serial8);
 
   reciver.setup();
-
+  //leftRacket.setup();
   l_racketPiezoDetector.setThersholdMin(5);
   l_racketPiezoDetector.setPeakTrackMillis(10);
   l_racketPiezoDetector.setAfterSchockMillis(25);
@@ -153,17 +153,19 @@ ET.receiveData();
 
   
   l_tablePiezoSmoother.update();
-  r_tablePiezoSmoother.update();
-
   l_tablePiezoDetector.loop();
-  r_tablePiezoDetector.loop();
-  l_racketPiezoDetector.loop();
-  r_racketPiezoDetector.loop();
-
   l_tablePiezoDetector.setInput(l_tablePiezoSmoother.getValue());
+
+  r_tablePiezoSmoother.update();
+  r_tablePiezoDetector.loop();
   r_tablePiezoDetector.setInput(r_tablePiezoSmoother.getValue());
+
+  l_racketPiezoDetector.loop();
   l_racketPiezoDetector.setInput(racketData.pz);
+
+  r_racketPiezoDetector.loop();
   r_racketPiezoDetector.setInput(mydata.pz);
+
 
 
 /*
@@ -175,7 +177,7 @@ ET.receiveData();
   ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚═╝   ╚═╝   
 */
 
-  //Left TABLE
+  //Left TABLE is hit
   if(l_tablePiezoDetector.getHit())
   {
     l_tablePiezoCounter.add();
@@ -184,7 +186,7 @@ ET.receiveData();
 
   }
 
-  //RIGHT TABLE
+  //RIGHT TABLE is hit
   if(r_tablePiezoDetector.getHit())
   {  
     r_tablePiezoCounter.add();
@@ -193,7 +195,7 @@ ET.receiveData();
 
   }
 
-  // LEFT Racket
+  // LEFT Racket is hit
   if(l_racketPiezoDetector.getHit())
   {
     l_racketPiezoCounter.add();
@@ -202,13 +204,100 @@ ET.receiveData();
 
   }
 
-   // Right Racket
+   // Right Racket is hit 
   if(r_racketPiezoDetector.getHit())
   {
     r_racketPiezoCounter.add();
     Serial.print("Ball hits RGHT Racket : ");
     Serial.println( r_racketPiezoCounter.getSum());
   }
+
+
+// LEFT Racket 
+// Do
+int l_rCounter = l_racketPiezoCounter.getSum();
+int l_tCounter = l_tablePiezoCounter.getSum();
+int r_tCounter = r_tablePiezoCounter.getSum();
+int r_rCounter = r_racketPiezoCounter.getSum();
+/*
+███████╗████████╗ █████╗ ████████╗███████╗███████╗
+██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██╔════╝██╔════╝
+███████╗   ██║   ███████║   ██║   █████╗  ███████╗
+╚════██║   ██║   ██╔══██║   ██║   ██╔══╝  ╚════██║
+███████║   ██║   ██║  ██║   ██║   ███████╗███████║
+╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚══════╝
+                                                  
+*/
+
+enum States { START, AS_L_RACKET, AS_L_TABLE, AS_R_TABLE, AS_R_RACKET, // Aufschlag
+                     BW_L_TABLE, BW_L_RACKET, BW_R_TABLE, BW_R_RACKET, // Ballwechsel
+                     
+
+/*
+ █████╗ ██╗   ██╗███████╗███████╗ ██████╗██╗  ██╗██╗      █████╗  ██████╗ 
+██╔══██╗██║   ██║██╔════╝██╔════╝██╔════╝██║  ██║██║     ██╔══██╗██╔════╝ 
+███████║██║   ██║█████╗  ███████╗██║     ███████║██║     ███████║██║  ███╗
+██╔══██║██║   ██║██╔══╝  ╚════██║██║     ██╔══██║██║     ██╔══██║██║   ██║
+██║  ██║╚██████╔╝██║     ███████║╚██████╗██║  ██║███████╗██║  ██║╚██████╔╝
+╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝ 
+*/     
+//                                                                                                                                                    // States:
+if( l_rCounter == 1 && l_tCounter == 0 && r_tCounter == 0 && r_rCounter == 0); // Hit Left Racket -  isHit(1,0,0,0);   
+if( l_rCounter == 0 && l_tCounter == 1 && r_tCounter == 0 && r_rCounter == 0); // Hit Left Table  -  isHit(1,0,0,0);
+if( l_rCounter == 0 && l_tCounter == 0 && r_tCounter == 1 && r_rCounter == 0); // Hit Right Table
+if( l_rCounter == 0 && l_tCounter == 0 && r_tCounter == 0 && r_rCounter == 1); // Hit Right Racket
+// States: Hit Left Racket >> Hit Left Table >> Hit Right Table >> Hit Right Racket
+// >> Succseful Aufschlag 
+
+/*
+██████╗  █████╗ ██╗     ██╗     ██╗    ██╗███████╗ ██████╗██╗  ██╗███████╗███████╗██╗     
+██╔══██╗██╔══██╗██║     ██║     ██║    ██║██╔════╝██╔════╝██║  ██║██╔════╝██╔════╝██║     
+██████╔╝███████║██║     ██║     ██║ █╗ ██║█████╗  ██║     ███████║███████╗█████╗  ██║     
+██╔══██╗██╔══██║██║     ██║     ██║███╗██║██╔══╝  ██║     ██╔══██║╚════██║██╔══╝  ██║     
+██████╔╝██║  ██║███████╗███████╗╚███╔███╔╝███████╗╚██████╗██║  ██║███████║███████╗███████╗
+╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝ ╚══╝╚══╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
+*/
+if( l_rCounter == 0 && l_tCounter == 1 && r_tCounter == 0 && r_rCounter == 0); // Hit Left Table 
+if( l_rCounter == 1 && l_tCounter == 0 && r_tCounter == 0 && r_rCounter == 0); // Hit Left Racket
+if( l_rCounter == 0 && l_tCounter == 0 && r_tCounter == 1 && r_rCounter == 0); // Hit Right Table
+if( l_rCounter == 0 && l_tCounter == 0 && r_tCounter == 0 && r_rCounter == 1); // Hit Right Racket
+// States: Hit Left Table >> Hit Left Racket >> Hit Right Table >> Hit Right Racket
+// >> Succseful Ballwechsel 
+
+/*
+███████╗███████╗██╗  ██╗██╗     ███████╗██████╗ 
+██╔════╝██╔════╝██║  ██║██║     ██╔════╝██╔══██╗
+█████╗  █████╗  ███████║██║     █████╗  ██████╔╝
+██╔══╝  ██╔══╝  ██╔══██║██║     ██╔══╝  ██╔══██╗
+██║     ███████╗██║  ██║███████╗███████╗██║  ██║
+╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝
+*/
+if( l_rCounter > 1 || l_tCounter > 1 || r_tCounter > 1 || r_rCounter > 1); // Restart Game
+// Rule: The Ball does never hit two times at the Table or Racket and does fall to earth
+
+
+/*
+██████╗ ███████╗███████╗███████╗████████╗
+██╔══██╗██╔════╝██╔════╝██╔════╝╚══██╔══╝
+██████╔╝█████╗  ███████╗█████╗     ██║   
+██╔══██╗██╔══╝  ╚════██║██╔══╝     ██║   
+██║  ██║███████╗███████║███████╗   ██║   
+╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝   ╚═╝   
+                                         
+*/
+void resetAllCounters()
+{
+  l_racketPiezoCounter.reset();
+  l_tablePiezoCounter.reset();
+  r_tablePiezoCounter.reset();
+  r_racketPiezoCounter.reset();
+}
+// Reset all Counters to Zero(0)
+
+
+
+
+
 
 
 
