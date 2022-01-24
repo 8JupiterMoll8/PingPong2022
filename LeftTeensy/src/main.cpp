@@ -8,6 +8,7 @@
 #include "PeaKDetector.hpp"
 //#include "Racket.hpp"
 #include "ResponsiveAnalogRead.h"
+#include "Counter.hpp"
 
 
 /*
@@ -53,6 +54,7 @@ RECEIVE_DATA_STRUCTURE mydata;
 ╚══════╝╚══════╝╚═╝        ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
 */                                                                                      
 PeakDetector l_racketPiezoDetector;
+Counter      l_racketPiezoCounter(0);
 
 /*
 ██████╗ ██╗ ██████╗ ██╗  ██╗████████╗    ██████╗  █████╗  ██████╗██╗  ██╗███████╗████████╗
@@ -64,6 +66,7 @@ PeakDetector l_racketPiezoDetector;
 */ 
 
 PeakDetector r_racketPiezoDetector;
+Counter      r_racketPiezoCounter(0);
                                                                                           
                                                                                                                                                                                                                                                                                                                                                      
 
@@ -78,6 +81,7 @@ PeakDetector r_racketPiezoDetector;
 const int L_TABLE_PIEZO_PIN = A16;
 ResponsiveAnalogRead l_tablePiezoSmoother(L_TABLE_PIEZO_PIN, false);
 PeakDetector l_tablePiezoDetector;
+Counter      l_tablePiezoCounter(0);
 
 /*
 ██████╗ ██╗ ██████╗ ██╗  ██╗████████╗    ████████╗ █████╗ ██████╗ ██╗     ███████╗
@@ -90,6 +94,7 @@ PeakDetector l_tablePiezoDetector;
 const byte R_TABLE_PIEZO_PIN = A17;
 ResponsiveAnalogRead r_tablePiezoSmoother(R_TABLE_PIEZO_PIN, false);
 PeakDetector r_tablePiezoDetector;
+Counter      r_tablePiezoCounter(0);
 
 /*
 ███████╗███████╗████████╗██╗   ██╗██████╗  ██╗██╗ 
@@ -107,7 +112,6 @@ void setup()
   // while (!Serial )
   // {
   // }
-
 
   ET.begin(details(mydata), &Serial8);
 
@@ -136,6 +140,7 @@ void setup()
  */                                         
 void loop()
 {
+  
 ET.receiveData();
   //  if (ET.receiveData())
   //  {
@@ -159,29 +164,54 @@ ET.receiveData();
   r_tablePiezoDetector.setInput(r_tablePiezoSmoother.getValue());
   l_racketPiezoDetector.setInput(racketData.pz);
   r_racketPiezoDetector.setInput(mydata.pz);
-  
+
+
+/*
+  ██████╗  █████╗ ██╗     ██╗         ██╗  ██╗██╗████████╗
+  ██╔══██╗██╔══██╗██║     ██║         ██║  ██║██║╚══██╔══╝
+  ██████╔╝███████║██║     ██║         ███████║██║   ██║   
+  ██╔══██╗██╔══██║██║     ██║         ██╔══██║██║   ██║   
+  ██████╔╝██║  ██║███████╗███████╗    ██║  ██║██║   ██║   
+  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚═╝   ╚═╝   
+*/
+
   //Left TABLE
   if(l_tablePiezoDetector.getHit())
   {
-    Serial.println("Ball hits LEFT Table");
+    l_tablePiezoCounter.add();
+    Serial.print("Ball hits LEFT Table : " );
+    Serial.println( l_tablePiezoCounter.getSum());
+
   }
 
   //RIGHT TABLE
   if(r_tablePiezoDetector.getHit())
-  {
-    Serial.println("Ball hits Right Table");
+  {  
+    r_tablePiezoCounter.add();
+    Serial.print("Ball hits Right Table : " );
+    Serial.println( r_tablePiezoCounter.getSum());
+
   }
 
   // LEFT Racket
   if(l_racketPiezoDetector.getHit())
   {
-    Serial.println("Ball hits LEFT Racket");
+    l_racketPiezoCounter.add();
+    Serial.print("Ball hits LEFT Racket : " );
+    Serial.println( l_racketPiezoCounter.getSum());
+
   }
 
    // Right Racket
   if(r_racketPiezoDetector.getHit())
   {
-    Serial.println("Ball hits RGHT Racket");
+    r_racketPiezoCounter.add();
+    Serial.print("Ball hits RGHT Racket : ");
+    Serial.println( r_racketPiezoCounter.getSum());
   }
+
+
+
   
-}
+
+}//End Loop

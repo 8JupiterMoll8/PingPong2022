@@ -58,18 +58,19 @@ void setup()
 
 void loop()
 {
+ 
     blink();
     reciver.loop();
+    //ET
     mydata.pz = racketData.pz;
-    //Serial.println(racketData.pz);
     ET.sendData();
-    // delay(100);
+   
 }
 
 void blink()
 {
   static elapsedMillis ms_blink;
-  if (ms_blink > 100)
+  if (ms_blink > 1000)
   {
     static boolean toggle = true;
     toggle = !toggle;
