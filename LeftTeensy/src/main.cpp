@@ -22,7 +22,7 @@
 RF24 radio(21, 20); //CE pin, CSN pin
 const uint64_t ADRESS{0xF0F0F0F0E1LL};
 const byte CHANNEL{125};
-ReciverData racketData;
+ReciverData racketData;// Observer 
 Reciver reciver(radio, ADRESS, CHANNEL, racketData);
 
 
@@ -116,6 +116,14 @@ States state = START;
 
 boolean checkOkHit(int , int , int , int );
 void resetAllCounters();
+void printGameStatus();
+boolean isFehler();
+
+int l_rCounter ;
+int l_tCounter ;
+int r_tCounter ;
+int r_rCounter ;
+
 
 /*
 ███████╗███████╗████████╗██╗   ██╗██████╗  ██╗██╗ 
@@ -130,9 +138,9 @@ void setup()
   Serial.begin(9600);
   Serial8.begin(9600);
 
-  // while (!Serial )
-  // {
-  // }
+  while (!Serial )
+  {
+  }
 
   ET.begin(details(mydata), &Serial8);
 
@@ -150,6 +158,8 @@ void setup()
   r_tablePiezoDetector.setThersholdMin(55);
   r_tablePiezoDetector.setPeakTrackMillis(10);
   r_tablePiezoDetector.setAfterSchockMillis(25);
+
+  state = START;
 }
 
 /*
@@ -203,8 +213,8 @@ void loop()
   if(l_tablePiezoDetector.getHit())
   {
     l_tablePiezoCounter.add();
-    Serial.print("Ball hits LEFT Table : " );
-    Serial.println( l_tablePiezoCounter.getSum());
+    //Serial.print("Ball hits LEFT Table : " );
+    //Serial.println( l_tablePiezoCounter.getSum());
 
   }
 
@@ -212,8 +222,8 @@ void loop()
   if(r_tablePiezoDetector.getHit())
   {  
     r_tablePiezoCounter.add();
-    Serial.print("Ball hits Right Table : " );
-    Serial.println( r_tablePiezoCounter.getSum());
+    //Serial.print("Ball hits Right Table : " );
+    //Serial.println( r_tablePiezoCounter.getSum());
 
   }
 
@@ -221,8 +231,8 @@ void loop()
   if(l_racketPiezoDetector.getHit())
   {
     l_racketPiezoCounter.add();
-    Serial.print("Ball hits LEFT Racket : " );
-    Serial.println( l_racketPiezoCounter.getSum());
+    //Serial.print("Ball hits LEFT Racket : " );
+    //Serial.println( l_racketPiezoCounter.getSum());
 
   }
 
@@ -230,17 +240,20 @@ void loop()
   if(r_racketPiezoDetector.getHit())
   {
     r_racketPiezoCounter.add();
-    Serial.print("Ball hits RGHT Racket : ");
-    Serial.println( r_racketPiezoCounter.getSum());
+   // Serial.print("Ball hits RGHT Racket : ");
+   // Serial.println( r_racketPiezoCounter.getSum());
   }
 
 
 // LEFT Racket 
 // Do
-int l_rCounter = l_racketPiezoCounter.getSum();
-int l_tCounter = l_tablePiezoCounter.getSum();
-int r_tCounter = r_tablePiezoCounter.getSum();
-int r_rCounter = r_racketPiezoCounter.getSum();
+l_rCounter = l_racketPiezoCounter.getSum();
+l_tCounter = l_tablePiezoCounter.getSum();
+r_tCounter = r_tablePiezoCounter.getSum();
+r_rCounter = r_racketPiezoCounter.getSum();
+
+
+ 
 
 switch (state)
 {
@@ -254,7 +267,14 @@ switch (state)
                                           
 */
 case START:
-  /* code */
+  
+  Serial.println("STARTE SPIEL");
+  Serial.println("State 1.) AUFSCHLAG : Warte dass, der Ball trift Left Racket trift"); 
+  resetAllCounters();
+  printGameStatus();
+  state = AS_L_RACKET;
+
+  // Leave State:
   break;
 /*
  █████╗ ██╗   ██╗███████╗███████╗ ██████╗██╗  ██╗██╗      █████╗  ██████╗ 
@@ -267,34 +287,70 @@ case START:
 // States: Hit Left Racket >> Hit Left Table >> Hit Right Table >> Hit Right Racket
 // >> Succseful Aufschlag 
 case AS_L_RACKET:
+// Do
+  
+
 // Leave State:
-  if (checkOkHit(1,0,0,0)) // Hit Left Racket leftRacket.isOneHit();
+    if ( l_rCounter == 1 )
   {
-    resetAllCounters()
+
+    Serial.println("AUFSCHLAG : BAll trift Left Racket");
+    Serial.println("State 2.)AUFSCHLAG : Warte das BAll trift Left Table");
+
+    printGameStatus();
+    resetAllCounters();
     state = AS_L_TABLE;
-  } 
-  break;
+   
+  }
+
+break;
 
 case AS_L_TABLE:
-  if(checkOkHit(0,1,0,0)) // Hit Left Table  leftTable.isOneHit();
+//Do
+// Leave State: 
+    if ( l_tCounter == 1 )
   {
-    resetAllCounters()
+    
+
+    Serial.println("AUFSCHLAG : BAll trift Left Table");
+    Serial.println("State 3.) AUFSCHLAG : Warte das BAll trift Right Table");
+
+    resetAllCounters();
+    printGameStatus();
     state = AS_R_TABLE;
+   
   }
+
   break;
 
 case AS_R_TABLE:
-  if(checkOkHit(0,0,1,0)) // Hit Right Table  
+  if (  r_tCounter == 1)
   {
-    resetAllCounters()
+    
+
+    Serial.println("AUFSCHLAG : BAll trift Right Table");
+    Serial.println("AUFSCHLAG : Warte das BAll trift Right Racket");
+
+    resetAllCounters();
+    printGameStatus();
     state = AS_R_RACKET;
+   
   }
   break;
 
 case AS_R_RACKET:
-  if(checkOkHit(0,0,0,1)) // Hit Right Table  
+   if (  r_rCounter == 1)
   {
-    resetAllCounters()
+    printGameStatus();
+
+     Serial.println("AUFSCHLAG : BAll trift Right Racket");
+     Serial.println("AUFSCHLAG Erfolgreich");
+     Serial.println("Starte Ballwechsel");
+
+    
+
+
+    resetAllCounters();
     state = BW_L_TABLE;
   }
   break;
@@ -318,7 +374,7 @@ case BW_L_TABLE:
 case BW_L_RACKET:
   if (checkOkHit(1, 0, 0, 0)) // Hit Left RACket
   {
-    resetAllCounters()
+    resetAllCounters();
     state = BW_R_TABLE;
   }
   break;
@@ -326,7 +382,7 @@ case BW_L_RACKET:
 case BW_R_TABLE:
   if (checkOkHit(0, 0, 1, 0)) // Hit Right Table
   {
-    resetAllCounters()
+    resetAllCounters();
     state = BW_R_RACKET;
   }
   break;
@@ -334,7 +390,7 @@ case BW_R_TABLE:
 case BW_R_RACKET:
   if (checkOkHit(0, 0, 0, 1)) // Hit Right Racket
   {
-    resetAllCounters()
+    resetAllCounters();
     state = TOTAL_COUNTER;
   }
   break;
@@ -365,8 +421,12 @@ boolean checkOkHit(int l_rC, int l_tC, int r_tC, int r_rC )
 {
   if( l_rCounter == l_rC && l_tCounter == l_tC && r_tCounter == r_tC && r_rCounter == r_rC)
   {
-    retunr true;
+    
+    return true;
 
+  }else
+  {
+    return false;
   }
 
 }
@@ -385,8 +445,12 @@ boolean isFehler()
   //if(leftRacket.isDoubleHit() || leftTable.isDoubleHit() || rightTable.isDoubleHit() || rightRacket.isDoubeleHit())
   if (l_rCounter > 1 || l_tCounter > 1 || r_tCounter > 1 || r_rCounter > 1)
   {
+ 
     return true;
 
+  }else
+  {
+    return false;
   }
    
 }
@@ -406,4 +470,14 @@ void resetAllCounters()
   l_tablePiezoCounter.reset();
   r_tablePiezoCounter.reset();
   r_racketPiezoCounter.reset();
+}
+
+void printGameStatus()
+{
+Serial.print(l_rCounter);
+ Serial.print(l_tCounter);
+ Serial.print(r_tCounter);
+ Serial.print(r_rCounter);
+ Serial.println("");
+
 }
