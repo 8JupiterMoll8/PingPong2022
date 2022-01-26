@@ -4,20 +4,22 @@
 	
 #include "PeaKDetector.hpp"
 #include "Counter.hpp"
-#include "ResponsiveAnalogRead.h"
+#include "I_InputSensorBhv.hpp"
 
 class Piezo
 {
 private:
    PeakDetector         &m_peakDetecor;
    Counter              &m_counter;
-   ResponsiveAnalogRead &m_smoother;
+   I_InputSensorBhv     *m_inputValue;
+   
 
 public:
-	Piezo(PeakDetector &peakDetector,Counter &counter,ResponsiveAnalogRead &smoother):
+ 
+	Piezo(PeakDetector &peakDetector,Counter &counter,I_InputSensorBhv &inputValue):
 	m_peakDetecor(peakDetector),
 	m_counter(counter),
-	m_smoother(smoother)
+    m_inputValue(&inputValue) 
 	{
 
 	}
@@ -26,8 +28,10 @@ public:
 	void loop()
 	{
 		m_smoother.update();
-		m_peakDetecor.loop();
-		m_peakDetecor.setInput(m_smoother.getValue());
+		m_peakDetecor.loop(m_inputValue->);
+
+	    
+		m_peakDetecor.setInput(m_inputValue->getValue());
 
 		if(m_peakDetecor.getHit())
 		{

@@ -10,7 +10,7 @@ private:
 	int m_thresholdMin     {5} ; // minimum reading, avoid noise and false starts
     int m_peakTrackMillis  {3} ;
 	int m_aftershockMillis {25} ; // aftershocks & vibration reject
-	int m_inputSensor     {1} ;
+	int m_inputSensor      {1} ;
 
     int           m_state;// 0=idle, 1=looking for peak, 2=ignore aftershocks
     int           m_peak; // remember the highest reading
@@ -21,9 +21,12 @@ private:
 	boolean *ptr = &ball;
 
 public:
-    PeakDetector(){};
-	PeakDetector(int inputSensor ):m_inputSensor(inputSensor)                                            
-	{}
+    PeakDetector(int thresholdMin, int peakTrackMillis, int aftershockMillis  ):
+	m_thresholdMin(thresholdMin),
+	m_peakTrackMillis(peakTrackMillis),
+	m_aftershockMillis(aftershockMillis)
+	{};
+	
 
 
    boolean getHit()
