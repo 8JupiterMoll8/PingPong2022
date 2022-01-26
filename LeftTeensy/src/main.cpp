@@ -9,7 +9,7 @@
 //#include "Racket.hpp"
 #include "ResponsiveAnalogRead.h"
 #include "Counter.hpp"
-#include "Table.hpp"
+#include "Piezo.hpp"
 
 
 /*
@@ -54,8 +54,9 @@ RECEIVE_DATA_STRUCTURE mydata;
 ███████╗███████╗██║        ██║       ██║  ██║██║  ██║╚██████╗██║  ██╗███████╗   ██║   
 ╚══════╝╚══════╝╚═╝        ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
 */                                                                                      
-PeakDetector l_racketPiezoDetector;
-Counter      l_racketPiezoCounter(0);
+PeakDetector lr_PiezoDetector;
+Counter      lr_PiezoCounter;
+
 
 /*
 ██████╗ ██╗ ██████╗ ██╗  ██╗████████╗    ██████╗  █████╗  ██████╗██╗  ██╗███████╗████████╗
@@ -67,7 +68,7 @@ Counter      l_racketPiezoCounter(0);
 */ 
 
 PeakDetector r_racketPiezoDetector;
-Counter      r_racketPiezoCounter(0);
+Counter      r_racketPiezoCounter;
                                                                                           
                                                                                                                                                                                                                                                                                                                                                      
 
@@ -79,10 +80,16 @@ Counter      r_racketPiezoCounter(0);
 ███████╗███████╗██║        ██║          ██║   ██║  ██║██████╔╝███████╗███████╗
 ╚══════╝╚══════╝╚═╝        ╚═╝          ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
  */
-const int L_TABLE_PIEZO_PIN = A16;
-ResponsiveAnalogRead l_tablePiezoSmoother(L_TABLE_PIEZO_PIN, false);
-PeakDetector l_tablePiezoDetector;
-Counter      l_tablePiezoCounter(0);
+/*PIEZO*/
+const int LT_PIEZO_PIN               {A16};
+const int LT_PIEZO_THERSHOLD_MIN      {35};
+const int LT_PIEZO_PEAKTRACK_MILLIS   {10};
+const int LT_PIEZO_AFTERSCHOCK_MILLIS {25};
+
+PeakDetector         lt_PiezoDetector(LT_PIEZO_THERSHOLD_MIN,LT_PIEZO_PEAKTRACK_MILLIS,LT_PIEZO_AFTERSCHOCK_MILLIS);
+ResponsiveAnalogRead lt_PiezoSmoother(LT_PIEZO_PIN, false);
+Counter              lt_PiezoCounter;
+Piezo                lt_Piezo(lt_PiezoDetector, lt_PiezoCounter, lt_PiezoSmoother);
 
 /*
 ██████╗ ██╗ ██████╗ ██╗  ██╗████████╗    ████████╗ █████╗ ██████╗ ██╗     ███████╗
@@ -92,10 +99,20 @@ Counter      l_tablePiezoCounter(0);
 ██║  ██║██║╚██████╔╝██║  ██║   ██║          ██║   ██║  ██║██████╔╝███████╗███████╗
 ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝          ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
  */  
-const byte R_TABLE_PIEZO_PIN = A17;
-ResponsiveAnalogRead r_tablePiezoSmoother(R_TABLE_PIEZO_PIN, false);
-PeakDetector r_tablePiezoDetector;
-Counter      r_tablePiezoCounter(0);
+
+/*PIEZO*/
+const int RT_PIEZO_PIN               {A17};
+const int RT_PIEZO_THERSHOLD_MIN      {35};
+const int RT_PIEZO_PEAKTRACK_MILLIS   {10};
+const int RT_PIEZO_AFTERSCHOCK_MILLIS {25};
+
+PeakDetector         rt_PiezoDetector(RT_PIEZO_THERSHOLD_MIN,RT_PIEZO_PEAKTRACK_MILLIS,RT_PIEZO_AFTERSCHOCK_MILLIS);
+ResponsiveAnalogRead rt_PiezoSmoother(RT_PIEZO_PIN, false);
+Counter              rt_PiezoCounter;
+Piezo                rt_Piezo(rt_PiezoDetector, rt_PiezoSmoother)             
+
+
+
 
 /*
 ███████╗███████╗████████╗██╗   ██╗██████╗  ██╗██╗ 
@@ -117,14 +134,11 @@ void setup()
   ET.begin(details(mydata), &Serial8);
 
   reciver.setup();
+  lt_Piezo.
 
   l_racketPiezoDetector.setThersholdMin(5);
   l_racketPiezoDetector.setPeakTrackMillis(10);
   l_racketPiezoDetector.setAfterSchockMillis(25);
-
-  l_tablePiezoDetector.setThersholdMin(35);
-  l_tablePiezoDetector.setPeakTrackMillis(10);
-  l_tablePiezoDetector.setAfterSchockMillis(25);
 
   r_tablePiezoDetector.setThersholdMin(55);
   r_tablePiezoDetector.setPeakTrackMillis(10);
@@ -151,39 +165,21 @@ ET.receiveData();
   // The Reciver fetch constanly Data from the Transmitter
   // to be used by the objects, which depend on them
   reciver.loop();
+  leftTable.loop();
 
-  
-  l_tablePiezoSmoother.update();
   r_tablePiezoSmoother.update();
-
-  l_tablePiezoDetector.loop();
   r_tablePiezoDetector.loop();
-  l_racketPiezoDetector.loop();
-  r_racketPiezoDetector.loop();
-
-  l_tablePiezoDetector.setInput(l_tablePiezoSmoother.getValue());
   r_tablePiezoDetector.setInput(r_tablePiezoSmoother.getValue());
+
+  l_racketPiezoDetector.loop();
   l_racketPiezoDetector.setInput(racketData.pz);
+
+  r_racketPiezoDetector.loop();
   r_racketPiezoDetector.setInput(mydata.pz);
 
 
-/*
-  ██████╗  █████╗ ██╗     ██╗         ██╗  ██╗██╗████████╗
-  ██╔══██╗██╔══██╗██║     ██║         ██║  ██║██║╚══██╔══╝
-  ██████╔╝███████║██║     ██║         ███████║██║   ██║   
-  ██╔══██╗██╔══██║██║     ██║         ██╔══██║██║   ██║   
-  ██████╔╝██║  ██║███████╗███████╗    ██║  ██║██║   ██║   
-  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚═╝   ╚═╝   
-*/
 
-  //Left TABLE
-  if(l_tablePiezoDetector.getHit())
-  {
-    l_tablePiezoCounter.add();
-    Serial.print("Ball hits LEFT Table : " );
-    Serial.println( l_tablePiezoCounter.getSum());
 
-  }
 
   //RIGHT TABLE
   if(r_tablePiezoDetector.getHit())
