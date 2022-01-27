@@ -12,6 +12,7 @@ private:
    PeakDetector         &m_peakDetecor;
    Counter              &m_counter;
    I_InputSensorBhv     *m_inputValue;
+   int m_piezoInput = 0;
    
 
 public:
@@ -27,18 +28,25 @@ public:
 
 	void loop()
 	{
-		m_smoother.update();
-		m_peakDetecor.loop(m_inputValue->);
+		m_inputValue->loop();
+		m_peakDetecor.loop();
 
 	    
-		m_peakDetecor.setInput(m_inputValue->getValue());
+        m_piezoInput = m_inputValue->getValue();
+		m_peakDetecor.setInput(m_piezoInput);
 
 		if(m_peakDetecor.getHit())
 		{
 			m_counter.add();
-			Serial.println("Hit");
+			//Serial.println("Hit");
 		   
 		}	
+
+	}
+
+	void countHit()
+	{
+		m_counter.add();
 
 	}
 

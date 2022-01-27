@@ -7,22 +7,22 @@ namespace HeadFirstDesignPatterns {
 namespace Strategy {
 
 class Duck {
-	protected: FlyBehavior* flyBehavior;
-	protected: QuackBehavior* quackBehavior;
+	protected: FlyBehavior* m_flyBehavior;
+	protected: QuackBehavior* m_quackBehavior;
 
-	protected: Duck() : flyBehavior(0), quackBehavior(0) {
+	protected: Duck() : m_flyBehavior(0), m_quackBehavior(0) {
 	}
 	public:	virtual void setFlyBehavior(FlyBehavior* fb) {
-		flyBehavior = fb;
+		m_flyBehavior = fb;
 	}
 	public: virtual void setQuackBehavior(QuackBehavior* qb) {
-		quackBehavior = qb;
+		m_quackBehavior = qb;
 	}
 	public: virtual void performFly() {
-		flyBehavior->fly();
+		m_flyBehavior->fly();
 	}
 	public: virtual void performQuack() {
-		quackBehavior->quack();
+		m_quackBehavior->quack();
 	}
 	public: virtual void swim() {
 		std::cout << "All ducks float, even decoys!" << std::endl;

@@ -11,14 +11,15 @@ class InputSensorSmooth : public I_InputSensorBhv
 
 	public:
 
-		InputSensorSmooth(ResponsiveAnalogRead smoothAnalogRead ):m_smoothAnalogRead(smoothAnalogRead)
+		InputSensorSmooth(ResponsiveAnalogRead &smoothAnalogRead ):m_smoothAnalogRead(smoothAnalogRead)
 		{
 
 		};
 
 		virtual void loop() override
 		{
-			m_smoothAnalogRead.begin();
+			
+			m_smoothAnalogRead.update();
 
 		}
 

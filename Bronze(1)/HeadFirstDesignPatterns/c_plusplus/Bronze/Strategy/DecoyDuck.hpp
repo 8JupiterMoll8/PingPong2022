@@ -8,8 +8,8 @@ namespace Strategy {
 
 class DecoyDuck : public Duck {
 	public:	DecoyDuck() {
-		quackBehavior = new MuteQuack();
-		flyBehavior = new FlyNoWay();
+		m_quackBehavior = new MuteQuack();
+		m_flyBehavior = new FlyNoWay();
 	}
 	public: virtual void display() {
 		std::cout << "I'm a duck Decoy" << std::endl;

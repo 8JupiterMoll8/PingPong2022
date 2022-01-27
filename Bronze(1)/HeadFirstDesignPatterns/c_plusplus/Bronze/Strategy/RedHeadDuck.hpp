@@ -8,8 +8,8 @@ namespace Strategy {
 
 class RedHead : public Duck {
 	public:	RedHead() {
-		quackBehavior = new Quack();
-		flyBehavior = new FlyWithWings();
+		m_quackBehavior = new Quack();
+		m_flyBehavior = new FlyWithWings();
 	}
 	public: virtual void display() {
 		std::cout << "I'm a real Red Headed duck" << std::endl;

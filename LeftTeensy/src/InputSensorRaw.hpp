@@ -11,7 +11,7 @@ class InputSensorRaw  : public I_InputSensorBhv
 
 	public:
 
-		InputSensorRaw(ReciverData reciverData):m_reciver(reciverData)
+		InputSensorRaw(ReciverData &reciverData):m_reciver(reciverData)
 		{}
 
 		virtual void loop()
@@ -22,7 +22,7 @@ class InputSensorRaw  : public I_InputSensorBhv
 
 		virtual int getValue() override
 		{
-			return m_reciver.pz()
+			return m_reciver.pz;
 
 		}
 		

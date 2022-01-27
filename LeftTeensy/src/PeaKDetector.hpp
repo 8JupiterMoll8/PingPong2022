@@ -21,6 +21,7 @@ private:
 	boolean *ptr = &ball;
 
 public:
+    PeakDetector(){};
     PeakDetector(int thresholdMin, int peakTrackMillis, int aftershockMillis  ):
 	m_thresholdMin(thresholdMin),
 	m_peakTrackMillis(peakTrackMillis),

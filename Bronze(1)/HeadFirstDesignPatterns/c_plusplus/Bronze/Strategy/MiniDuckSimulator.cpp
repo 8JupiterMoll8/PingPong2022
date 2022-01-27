@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
 	model.performFly();
 	model.performQuack();
 	model.swim();
+	
 	model.setFlyBehavior(new FlyRocketPowered());
 	model.performFly();
 	model.setQuackBehavior(new FakeQuack());
