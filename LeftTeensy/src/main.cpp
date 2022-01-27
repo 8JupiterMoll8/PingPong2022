@@ -220,8 +220,11 @@ case START:
 
   Serial.println("STARTE SPIEL");
   Serial.println("State 1.) AUFSCHLAG : Warte dass, der Ball trift Left Racket trift");
+  
+  //printGameStatus();
   resetAllCounters();
-  printGameStatus();
+
+  //Leave State:
   state = lr_AS;
 
   // Leave State:
@@ -242,11 +245,10 @@ case lr_AS:
   //Leave State:
   if (lr_Piezo.hitSum() == 1)
   {
-
     Serial.println("AUFSCHLAG : BAll trift Left Racket");
     Serial.println("State 2.)AUFSCHLAG : Warte das BAll trift Left Table");
 
-    printGameStatus();
+    //printGameStatus();
     resetAllCounters();
     state = lt_AS;
   }
@@ -258,12 +260,11 @@ case lt_AS:
   // Leave State:
   if (lt_Piezo.hitSum() == 1)
   {
-
     Serial.println("AUFSCHLAG : BAll trift Left Table");
     Serial.println("State 3.) AUFSCHLAG : Warte das BAll trift Right Table");
 
+    //printGameStatus();
     resetAllCounters();
-    printGameStatus();
     state = rt_AS;
   }
 
@@ -278,8 +279,8 @@ case rt_AS:
     Serial.println("AUFSCHLAG : BAll trift Right Table");
     Serial.println("AUFSCHLAG : Warte das BAll trift Right Racket");
 
+    //printGameStatus();
     resetAllCounters();
-    printGameStatus();
     state = rr_AS;
   }
   break;
@@ -289,12 +290,12 @@ case rr_AS:
   // Leave State:
   if (rr_Piezo.hitSum() == 1)
   {
-    printGameStatus();
-
     Serial.println("AUFSCHLAG : BAll trift Right Racket");
     Serial.println("AUFSCHLAG Erfolgreich");
     Serial.println("Starte Ballwechsel");
+    Serial.println("BAllWechsel : Warte das BAll trift Left Table");
 
+    //printGameStatus();
     resetAllCounters();
     state = lt_BW;
   }
@@ -313,6 +314,8 @@ case lt_BW:
   // Leave State:
   if (lt_Piezo.hitSum() == 1) // Hit Left Table
   {
+    Serial.println("Ballwechsel : Warte das BAll trift Left Racket");
+
     resetAllCounters();
     state = lr_BW;
   }
@@ -323,6 +326,8 @@ case lr_BW:
   // Leave State:
   if (lr_Piezo.hitSum() == 1) // Hit Left RACket
   {
+    Serial.println("Ballwechsel : Warte das BAll trift Right Table");
+
     resetAllCounters();
     state = rt_BW;
   }
@@ -333,8 +338,11 @@ case rt_BW:
   // Leave State:
   if (rt_Piezo.hitSum() == 1) // Hit Right Table
   {
+    Serial.println("Ballwechsel : Warte das BAll trift Right RAcket");
+
     resetAllCounters();
     state = rr_BW;
+
   }
   break;
 
@@ -343,17 +351,24 @@ case rr_BW:
   // Leave State:
   if (rr_Piezo.hitSum() == 1) // Hit Right Racket
   {
+    Serial.println("Ballwechsel : Erfolgreich");
+
     resetAllCounters();
     state = count_BW;
+
   }
   break;
 
 case count_BW:
   //Do
-  // int totalBallWechselCounter++;
+  static int totalBallWechselCounter =0;
+  Serial.print("BAllWechsel Total : ");
+  Serial.println(++totalBallWechselCounter);
+  
+  Serial.println("BAllWechsel : Warte das BAll trift Left Table");
+
   // Leave State:
   state = lt_BW;
-
   break;
 
 default:
@@ -362,27 +377,7 @@ default:
 
 } //End Loop
 
-/*
- ██████╗ ██╗  ██╗        ██╗  ██╗██╗████████╗
-██╔═══██╗██║ ██╔╝        ██║  ██║██║╚══██╔══╝
-██║   ██║█████╔╝         ███████║██║   ██║   
-██║   ██║██╔═██╗         ██╔══██║██║   ██║   
-╚██████╔╝██║  ██╗███████╗██║  ██║██║   ██║   
- ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝   ╚═╝   
- */                                            
-boolean checkOkHit(int l_rC, int l_tC, int r_tC, int r_rC )
-{
-  if( lr_Counter == l_rC && lt_Counter == l_tC && rt_Counter == r_tC && rr_Counter == r_rC)
-  {
-    
-    return true;
 
-  }else
-  {
-    return false;
-  }
-
-}
 /*
 ███████╗███████╗██╗  ██╗██╗     ███████╗██████╗ 
 ██╔════╝██╔════╝██║  ██║██║     ██╔════╝██╔══██╗
@@ -423,10 +418,11 @@ void resetAllCounters()
   lt_Piezo.resetHitSum();
   rt_Piezo.resetHitSum();
   rr_Piezo.resetHitSum();
+}
 
 void printGameStatus()
 {
-Serial.print(lr_Counter);
+ Serial.print(lr_Counter);
  Serial.print(lt_Counter);
  Serial.print(rt_Counter);
  Serial.print(rr_Counter);
