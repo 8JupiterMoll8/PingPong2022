@@ -1,0 +1,44 @@
+@startuml
+scale 2
+class Piezo {
+    - counter :Counter
+    - smoother:Smoother
+    -isHit()
+    -sumHits()
+    -resetSumHits()
+}
+
+class Counter {
+    +start : int
+
+    -add()
+    -reset()
+    -sum()
+
+}
+class PeakDetecor
+{
+    -IsHit()
+
+}
+class Smoother  {
+    -getValue()
+
+}
+
+class LT_Piezo {
+
+}
+
+class RT_Piezo {
+
+}
+
+Piezo <|-- LT_Piezo
+Piezo <|-- RT_Piezo
+Counter *-- Piezo
+Smoother *-- Piezo
+PeakDetecor *-- Piezo
+
+
+@enduml

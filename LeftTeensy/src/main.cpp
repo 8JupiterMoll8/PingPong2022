@@ -9,6 +9,12 @@
 //#include "Racket.hpp"
 #include "ResponsiveAnalogRead.h"
 #include "Counter.hpp"
+#include "I_InputSensorBhv.hpp"
+#include "InputSensorRaw.hpp"
+#include "InputSensorSmooth.hpp"
+#include "InputSensorET.hpp"
+#include "Piezo.hpp"
+#include "ReciverDataET.hpp"
 
 
 /*
@@ -35,13 +41,6 @@ Reciver reciver(radio, ADRESS, CHANNEL, racketData);
 ╚══════╝   ╚═╝   
  */
 EasyTransfer ET;
-
-struct RECEIVE_DATA_STRUCTURE
-{
-  //put your variable definitions here for the data you want to send
-  //THIS MUST BE EXACTLY THE SAME ON THE OTHER ARDUINO
-  int16_t pz;
-} ;
 //give a name to the group of data
 RECEIVE_DATA_STRUCTURE mydata;
 
@@ -53,8 +52,15 @@ RECEIVE_DATA_STRUCTURE mydata;
 ███████╗███████╗██║        ██║       ██║  ██║██║  ██║╚██████╗██║  ██╗███████╗   ██║   
 ╚══════╝╚══════╝╚═╝        ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
 */                                                                                      
-PeakDetector l_racketPiezoDetector;
-Counter      l_racketPiezoCounter(0);
+const int LR_PIEZO_THERSHOLD_MIN       {5};
+const int LR_PIEZO_PEAKTRACK_MILLIS    {3};
+const int LR_PIEZO_AFTERSCHOCK_MILLIS {25};
+
+PeakDetector   lr_PiezoDetector(LR_PIEZO_THERSHOLD_MIN,LR_PIEZO_PEAKTRACK_MILLIS,LR_PIEZO_AFTERSCHOCK_MILLIS);
+Counter        lr_PiezoCounter;
+InputSensorET  lr_PiezoInput(mydata);
+Piezo          lr_Piezo(lr_PiezoDetector, lr_PiezoCounter,lr_PiezoInput );
+
 
 /*
 ██████╗ ██╗ ██████╗ ██╗  ██╗████████╗    ██████╗  █████╗  ██████╗██╗  ██╗███████╗████████╗
@@ -65,8 +71,14 @@ Counter      l_racketPiezoCounter(0);
 ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
 */ 
 
-PeakDetector r_racketPiezoDetector;
-Counter      r_racketPiezoCounter(0);
+const int RR_PIEZO_THERSHOLD_MIN       {5};
+const int RR_PIEZO_PEAKTRACK_MILLIS    {3};
+const int RR_PIEZO_AFTERSCHOCK_MILLIS {25};
+
+PeakDetector   rr_PiezoDetector(RR_PIEZO_THERSHOLD_MIN,RR_PIEZO_PEAKTRACK_MILLIS,RR_PIEZO_AFTERSCHOCK_MILLIS);
+Counter        rr_PiezoCounter;
+InputSensorRaw rr_PiezoInput(racketData);
+Piezo          rr_Piezo(rr_PiezoDetector, rr_PiezoCounter,rr_PiezoInput );//Composition   
                                                                                           
                                                                                                                                                                                                                                                                                                                                                      
 
@@ -78,10 +90,17 @@ Counter      r_racketPiezoCounter(0);
 ███████╗███████╗██║        ██║          ██║   ██║  ██║██████╔╝███████╗███████╗
 ╚══════╝╚══════╝╚═╝        ╚═╝          ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
  */
-const int L_TABLE_PIEZO_PIN = A16;
-ResponsiveAnalogRead l_tablePiezoSmoother(L_TABLE_PIEZO_PIN, false);
-PeakDetector l_tablePiezoDetector;
-Counter      l_tablePiezoCounter(0);
+/*PIEZO*/
+const int LT_PIEZO_PIN               {A16};
+const int LT_PIEZO_THERSHOLD_MIN      {35};
+const int LT_PIEZO_PEAKTRACK_MILLIS   {10};
+const int LT_PIEZO_AFTERSCHOCK_MILLIS {25};
+
+PeakDetector         lt_PiezoDetector(LT_PIEZO_THERSHOLD_MIN, LT_PIEZO_PEAKTRACK_MILLIS, LT_PIEZO_AFTERSCHOCK_MILLIS);
+ResponsiveAnalogRead lt_PiezoSmoother(LT_PIEZO_PIN, false);
+InputSensorSmooth    lt_PiezoInput(lt_PiezoSmoother);
+Counter              lt_PiezoCounter;
+Piezo                lt_Piezo(lt_PiezoDetector, lt_PiezoCounter, lt_PiezoInput );//Composition   
 
 /*
 ██████╗ ██╗ ██████╗ ██╗  ██╗████████╗    ████████╗ █████╗ ██████╗ ██╗     ███████╗
@@ -91,10 +110,21 @@ Counter      l_tablePiezoCounter(0);
 ██║  ██║██║╚██████╔╝██║  ██║   ██║          ██║   ██║  ██║██████╔╝███████╗███████╗
 ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝          ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
  */  
-const byte R_TABLE_PIEZO_PIN = A17;
-ResponsiveAnalogRead r_tablePiezoSmoother(R_TABLE_PIEZO_PIN, false);
-PeakDetector r_tablePiezoDetector;
-Counter      r_tablePiezoCounter(0);
+
+/*PIEZO*/
+const int RT_PIEZO_PIN                {A17};
+const int RT_PIEZO_THERSHOLD_MIN      {100};
+const int RT_PIEZO_PEAKTRACK_MILLIS   {10};
+const int RT_PIEZO_AFTERSCHOCK_MILLIS {25};
+
+PeakDetector         rt_PiezoDetector(RT_PIEZO_THERSHOLD_MIN, RT_PIEZO_PEAKTRACK_MILLIS, RT_PIEZO_AFTERSCHOCK_MILLIS);
+ResponsiveAnalogRead rt_PiezoSmoother(RT_PIEZO_PIN, false);
+InputSensorSmooth    rt_PiezoInput(rt_PiezoSmoother);
+Counter              rt_PiezoCounter;
+Piezo                rt_Piezo(rt_PiezoDetector, rt_PiezoCounter, rt_PiezoInput); //Composition           
+
+
+
 
 
 /*
@@ -145,7 +175,10 @@ void setup()
   ET.begin(details(mydata), &Serial8);
 
   reciver.setup();
+  
+              
 
+<<<<<<< HEAD
   //leftRacket.setup();
   l_racketPiezoDetector.setThersholdMin(5);
   l_racketPiezoDetector.setPeakTrackMillis(10);
@@ -160,6 +193,8 @@ void setup()
   r_tablePiezoDetector.setAfterSchockMillis(25);
 
   state = START;
+=======
+>>>>>>> main
 }
 
 /*
@@ -173,13 +208,21 @@ void setup()
 void loop()
 {
   
+<<<<<<< HEAD
   ET.receiveData();
  
+=======
+ET.receiveData();
+>>>>>>> main
 
-  // The Reciver fetch constanly Data from the Transmitter
-  // to be used by the objects, which depend on them
-  reciver.loop();
+reciver.loop();
 
+ lt_Piezo.loop();
+ rr_Piezo.loop();
+ rt_Piezo.loop();
+ lr_Piezo.loop();
+
+<<<<<<< HEAD
   //leftTable.loop();
   l_tablePiezoSmoother.update();
   l_tablePiezoDetector.loop();
@@ -251,6 +294,26 @@ l_rCounter = l_racketPiezoCounter.getSum();
 l_tCounter = l_tablePiezoCounter.getSum();
 r_tCounter = r_tablePiezoCounter.getSum();
 r_rCounter = r_racketPiezoCounter.getSum();
+=======
+ if(lt_Piezo.isHit())
+ {
+   lt_Piezo.countHit();
+
+ }
+  
+
+ 
+
+
+
+
+
+
+
+
+  
+
+>>>>>>> main
 
 
  
