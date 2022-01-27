@@ -314,6 +314,8 @@ case lt_BW:
   // Leave State:
   if (lt_Piezo.hitSum() == 1) // Hit Left Table
   {
+    usbMIDI.sendNoteOff(74,127,2);
+
     Serial.println("Ballwechsel : Warte das BAll trift Left Racket");
 
     resetAllCounters();
@@ -322,10 +324,11 @@ case lt_BW:
   break;
 
 case lr_BW:
-  //Do
+  //Dou
   // Leave State:
   if (lr_Piezo.hitSum() == 1) // Hit Left RACket
   {
+    usbMIDI.sendNoteOn(54,127,2);
     Serial.println("Ballwechsel : Warte das BAll trift Right Table");
 
     resetAllCounters();
@@ -335,9 +338,11 @@ case lr_BW:
 
 case rt_BW:
   //Do
+  
   // Leave State:
   if (rt_Piezo.hitSum() == 1) // Hit Right Table
   {
+    usbMIDI.sendNoteOff(54,0,2);
     Serial.println("Ballwechsel : Warte das BAll trift Right RAcket");
 
     resetAllCounters();
@@ -351,6 +356,7 @@ case rr_BW:
   // Leave State:
   if (rr_Piezo.hitSum() == 1) // Hit Right Racket
   {
+    usbMIDI.sendNoteOn(74,127,2);
     Serial.println("Ballwechsel : Erfolgreich");
 
     resetAllCounters();
@@ -364,7 +370,7 @@ case count_BW:
   static int totalBallWechselCounter =0;
   Serial.print("BAllWechsel Total : ");
   Serial.println(++totalBallWechselCounter);
-  
+
   Serial.println("BAllWechsel : Warte das BAll trift Left Table");
 
   // Leave State:
