@@ -178,23 +178,6 @@ void setup()
   
               
 
-<<<<<<< HEAD
-  //leftRacket.setup();
-  l_racketPiezoDetector.setThersholdMin(5);
-  l_racketPiezoDetector.setPeakTrackMillis(10);
-  l_racketPiezoDetector.setAfterSchockMillis(25);
-
-  l_tablePiezoDetector.setThersholdMin(35);
-  l_tablePiezoDetector.setPeakTrackMillis(10);
-  l_tablePiezoDetector.setAfterSchockMillis(25);
-
-  r_tablePiezoDetector.setThersholdMin(55);
-  r_tablePiezoDetector.setPeakTrackMillis(10);
-  r_tablePiezoDetector.setAfterSchockMillis(25);
-
-  state = START;
-=======
->>>>>>> main
 }
 
 /*
@@ -208,12 +191,8 @@ void setup()
 void loop()
 {
   
-<<<<<<< HEAD
-  ET.receiveData();
- 
-=======
+
 ET.receiveData();
->>>>>>> main
 
 reciver.loop();
 
@@ -222,102 +201,12 @@ reciver.loop();
  rt_Piezo.loop();
  lr_Piezo.loop();
 
-<<<<<<< HEAD
-  //leftTable.loop();
-  l_tablePiezoSmoother.update();
-  l_tablePiezoDetector.loop();
-  l_tablePiezoDetector.setInput(l_tablePiezoSmoother.getValue());
-   
-  // rightTable.loop();
-  r_tablePiezoSmoother.update();
-  r_tablePiezoDetector.loop();
-  r_tablePiezoDetector.setInput(r_tablePiezoSmoother.getValue());
-   
-  //leftRacket.loop();
-  l_racketPiezoDetector.loop();
-  l_racketPiezoDetector.setInput(racketData.pz);
-
-  //rightRacket.loop();
-  r_racketPiezoDetector.loop();
-  r_racketPiezoDetector.setInput(mydata.pz);
-
-
-
-/*
-  ██████╗  █████╗ ██╗     ██╗         ██╗  ██╗██╗████████╗
-  ██╔══██╗██╔══██╗██║     ██║         ██║  ██║██║╚══██╔══╝
-  ██████╔╝███████║██║     ██║         ███████║██║   ██║   
-  ██╔══██╗██╔══██║██║     ██║         ██╔══██║██║   ██║   
-  ██████╔╝██║  ██║███████╗███████╗    ██║  ██║██║   ██║   
-  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚═╝   ╚═╝   
-*/
-
-  //Left TABLE is hit
-  if(l_tablePiezoDetector.getHit())
-  {
-    l_tablePiezoCounter.add();
-    //Serial.print("Ball hits LEFT Table : " );
-    //Serial.println( l_tablePiezoCounter.getSum());
-
-  }
-
-  //RIGHT TABLE is hit
-  if(r_tablePiezoDetector.getHit())
-  {  
-    r_tablePiezoCounter.add();
-    //Serial.print("Ball hits Right Table : " );
-    //Serial.println( r_tablePiezoCounter.getSum());
-
-  }
-
-  // LEFT Racket is hit
-  if(l_racketPiezoDetector.getHit())
-  {
-    l_racketPiezoCounter.add();
-    //Serial.print("Ball hits LEFT Racket : " );
-    //Serial.println( l_racketPiezoCounter.getSum());
-
-  }
-
-   // Right Racket is hit 
-  if(r_racketPiezoDetector.getHit())
-  {
-    r_racketPiezoCounter.add();
-   // Serial.print("Ball hits RGHT Racket : ");
-   // Serial.println( r_racketPiezoCounter.getSum());
-  }
-
-
-// LEFT Racket 
-// Do
-l_rCounter = l_racketPiezoCounter.getSum();
-l_tCounter = l_tablePiezoCounter.getSum();
-r_tCounter = r_tablePiezoCounter.getSum();
-r_rCounter = r_racketPiezoCounter.getSum();
-=======
  if(lt_Piezo.isHit())
  {
    lt_Piezo.countHit();
 
  }
-  
-
  
-
-
-
-
-
-
-
-
-  
-
->>>>>>> main
-
-
- 
-
 switch (state)
 {
 /*
