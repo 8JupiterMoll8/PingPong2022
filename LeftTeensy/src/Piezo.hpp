@@ -56,7 +56,7 @@ public:
 
 	}
 
-	int getHitSum()
+	int hitSum()
 	{
 		return m_counter.getSum();
 
