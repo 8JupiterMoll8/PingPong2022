@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <EasyTransfer.h>
 #include <SPI.h>
 #include "printf.h"
 #include "RF24.h"
@@ -15,7 +14,13 @@
 #include "InputSensorET.hpp"
 #include "Piezo.hpp"
 #include "ReciverDataET.hpp"
-
+//#include "Birnen.hpp"
+#include <EasyTransfer.h>
+#include "Swing.hpp" 
+#include "SensorFusion.h"
+#include "Mahony.hpp"
+#include "Pressure.hpp"
+#include "Speed.hpp"
 
 /*
 ██████╗ ███████╗██████╗ ██╗  ██╗
@@ -51,7 +56,8 @@ RECEIVE_DATA_STRUCTURE mydata;
 ██║     ██╔══╝  ██╔══╝     ██║       ██╔══██╗██╔══██║██║     ██╔═██╗ ██╔══╝     ██║   
 ███████╗███████╗██║        ██║       ██║  ██║██║  ██║╚██████╗██║  ██╗███████╗   ██║   
 ╚══════╝╚══════╝╚═╝        ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝   
-*/                                                                                      
+*/  
+                                                                                   
 const int LR_PIEZO_THERSHOLD_MIN       {5};
 const int LR_PIEZO_PEAKTRACK_MILLIS    {3};
 const int LR_PIEZO_AFTERSCHOCK_MILLIS {25};
@@ -60,7 +66,14 @@ PeakDetector   lr_PiezoDetector(LR_PIEZO_THERSHOLD_MIN,LR_PIEZO_PEAKTRACK_MILLIS
 Counter        lr_PiezoCounter;
 InputSensorET  lr_PiezoInput(mydata);
 Piezo          lr_Piezo(lr_PiezoDetector, lr_PiezoCounter,lr_PiezoInput );
-
+//Motion Behaviour
+Speed          lr_speed();
+Swing          lr_Swing(racketData);
+SF             lr_fusion;
+Mahony         lr_Mahony(racketData,lr_fusion);
+//FSR
+Pressure       lr_pressure(racketData);
+// Racket
 
 /*
 ██████╗ ██╗ ██████╗ ██╗  ██╗████████╗    ██████╗  █████╗  ██████╗██╗  ██╗███████╗████████╗
@@ -74,7 +87,7 @@ Piezo          lr_Piezo(lr_PiezoDetector, lr_PiezoCounter,lr_PiezoInput );
 const int RR_PIEZO_THERSHOLD_MIN       {5};
 const int RR_PIEZO_PEAKTRACK_MILLIS    {3};
 const int RR_PIEZO_AFTERSCHOCK_MILLIS {25};
-
+// Ball Hit Table
 PeakDetector   rr_PiezoDetector(RR_PIEZO_THERSHOLD_MIN,RR_PIEZO_PEAKTRACK_MILLIS,RR_PIEZO_AFTERSCHOCK_MILLIS);
 Counter        rr_PiezoCounter;
 InputSensorRaw rr_PiezoInput(racketData);
@@ -153,6 +166,16 @@ int lr_Counter ;
 int lt_Counter ;
 int rt_Counter ;
 int rr_Counter ;
+/*
+██╗     ██╗ ██████╗ ██╗  ██╗████████╗
+██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
+██║     ██║██║  ███╗███████║   ██║   
+██║     ██║██║   ██║██╔══██║   ██║   
+███████╗██║╚██████╔╝██║  ██║   ██║   
+╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   
+                                     
+*/
+//Birnen birnen;
 
 
 /*
@@ -175,6 +198,7 @@ void setup()
   ET.begin(details(mydata), &Serial8);
 
   reciver.setup();
+  //birnen.setup();
   
               
 
@@ -195,11 +219,29 @@ void loop()
 ET.receiveData();
 
 reciver.loop();
-
+// Piezo 
  lt_Piezo.loop();
  rr_Piezo.loop();
  rt_Piezo.loop();
- lr_Piezo.loop();
+
+// Left Racket
+lr_Piezo.loop();
+
+lr_Swing.loop();
+lr_Swing.A_Gain();
+lr_Swing.B_Gain();
+
+lr_Mahony.loop();
+lr_Mahony.roll();
+lr_Mahony.pitch();
+lr_Mahony.yaw();
+
+lr_pressure.loop();
+lr_pressure.value();
+
+
+
+
 
 
 
@@ -251,7 +293,7 @@ case lr_AS:
     //printGameStatus();
     resetAllCounters();
     state = lt_AS;
-  }
+  }   
 
   break;
 
