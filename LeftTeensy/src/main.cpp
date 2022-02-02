@@ -21,6 +21,57 @@
 #include "Mahony.hpp"
 #include "Pressure.hpp"
 #include "Speed.hpp"
+/*
+██╗     ██╗ ██████╗ ██╗  ██╗████████╗
+██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
+██║     ██║██║  ███╗███████║   ██║   
+██║     ██║██║   ██║██╔══██║   ██║   
+███████╗██║╚██████╔╝██║  ██║   ██║   
+╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   
+                                     
+*/
+#include <WS2812Serial.h>
+#define USE_WS2812SERIAL
+#include <FastLED.h>
+
+// How many leds in your strip?
+#define NUM_LEDS   134
+#define NUM_LEDS_2  75
+#define DATA_PIN    17
+#define DATA_PIN_2   1
+
+CRGB A_ledStrip[NUM_LEDS];
+CRGB B_ledStrip[NUM_LEDS_2];
+
+//Birnen birnen;
+
+
+class LedStrip
+{
+private:
+
+	CRGB (&m_A_ledStrip)[63];
+
+
+
+public:
+	LedStrip(CRGB (&ledStrip)[63])
+		:  ledStrip_(ledStrip)
+	{
+	}
+
+	void loop()
+	{
+		for (int i = firstPin_; i < lastPin_; i++)
+		{
+			ledStrip_[i].setRGB(255, 255, 255);
+			ledStrip_[i].nscale8(55);
+			FastLED.show();
+		}
+	}
+};
+
+
 
 /*
 ██████╗ ███████╗██████╗ ██╗  ██╗
@@ -30,10 +81,13 @@
 ██║  ██║██║     ███████╗     ██║
 ╚═╝  ╚═╝╚═╝     ╚══════╝     ╚═╝
 */
-RF24 radio(21, 20); //CE pin, CSN pin
-const uint64_t ADRESS{0xF0F0F0F0E1LL};
-const byte CHANNEL{125};
-ReciverData racketData;// Observer 
+const uint64_t ADRESS {0xF0F0F0F0E1LL};
+const byte CHANNEL {125};
+const byte CE_PIN  {21};
+const byte CSN_PIN {20};
+
+RF24 radio(CE_PIN, CSN_PIN); 
+ReciverData racketData;
 Reciver reciver(radio, ADRESS, CHANNEL, racketData);
 
 
@@ -47,7 +101,7 @@ Reciver reciver(radio, ADRESS, CHANNEL, racketData);
  */
 EasyTransfer ET;
 //give a name to the group of data
-RECEIVE_DATA_STRUCTURE mydata;
+RECEIVE_DATA_STRUCTURE et_rightRacketData;
 
 /*
 ██╗     ███████╗███████╗████████╗    ██████╗  █████╗  ██████╗██╗  ██╗███████╗████████╗
@@ -64,9 +118,10 @@ const int LR_PIEZO_AFTERSCHOCK_MILLIS {25};
 
 PeakDetector   lr_PiezoDetector(LR_PIEZO_THERSHOLD_MIN,LR_PIEZO_PEAKTRACK_MILLIS,LR_PIEZO_AFTERSCHOCK_MILLIS);
 Counter        lr_PiezoCounter;
-InputSensorET  lr_PiezoInput(mydata);
+InputSensorET  lr_PiezoInput(et_rightRacketData);
 Piezo          lr_Piezo(lr_PiezoDetector, lr_PiezoCounter,lr_PiezoInput );
 //Motion Behaviour
+//Hit          lr_hit()
 Speed          lr_speed();
 Swing          lr_Swing(racketData);
 SF             lr_fusion;
@@ -156,6 +211,7 @@ enum States { START, lr_AS, lt_AS, rt_AS, rr_AS, // Aufschlag von Links
 };
 
 States state = START;
+static int totalBallWechselCounter =0;
 
 boolean checkOkHit(int , int , int , int );
 void resetAllCounters();
@@ -166,16 +222,8 @@ int lr_Counter ;
 int lt_Counter ;
 int rt_Counter ;
 int rr_Counter ;
-/*
-██╗     ██╗ ██████╗ ██╗  ██╗████████╗
-██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
-██║     ██║██║  ███╗███████║   ██║   
-██║     ██║██║   ██║██╔══██║   ██║   
-███████╗██║╚██████╔╝██║  ██║   ██║   
-╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   
-                                     
-*/
-//Birnen birnen;
+
+
 
 
 /*
@@ -188,20 +236,25 @@ int rr_Counter ;
  */                                                 
 void setup()
 {
+//Init Serial 
   Serial.begin(9600);
-  Serial8.begin(9600);
-
   while (!Serial )
   {
   }
+// Init Light Bulb
+//birnen.setup();
 
-  ET.begin(details(mydata), &Serial8);
+//Init WS2182B
+  LEDS.addLeds<WS2812SERIAL,DATA_PIN,RGB>(A_ledStrip,NUM_LEDS);
+  LEDS.addLeds<WS2812SERIAL,DATA_PIN_2,RGB>(B_ledStrip,NUM_LEDS_2);
+	LEDS.setBrightness(255);
 
+//Init EasyTransfer
+  Serial8.begin(9600);
+  ET.begin(details(et_rightRacketData), &Serial8);
+
+//Init RF24 Reciver
   reciver.setup();
-  //birnen.setup();
-  
-              
-
 }
 
 /*
@@ -215,7 +268,7 @@ void setup()
 void loop()
 {
   
-
+ // Init EasyTransfer
 ET.receiveData();
 
 reciver.loop();
@@ -409,7 +462,7 @@ case rr_BW:
 
 case count_BW:
   //Do
-  static int totalBallWechselCounter =0;
+ 
   Serial.print("BAllWechsel Total : ");
   Serial.println(++totalBallWechselCounter);
 
