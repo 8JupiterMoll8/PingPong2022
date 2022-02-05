@@ -76,7 +76,7 @@ public:
         case START:
 
             Serial.println("STARTE SPIEL");
-            Serial.println("State 1.) AUFSCHLAG : Warte dass, der Ball trift Left Racket trift");
+            Serial.println("State 1.) AUFSCHLAG : Warte dass, der Ball trift LEFT RACKET trift");
 
             // printGameStatus();
             resetAllCounters();
@@ -103,7 +103,7 @@ public:
             if (m_leftRacket.hitSum() == 1)
             {
                 Serial.println("AUFSCHLAG : BAll trift Left Racket");
-                Serial.println("State 2.)AUFSCHLAG : Warte das BAll trift Left Table");
+                Serial.println("State 2.)AUFSCHLAG : Warte das BAll trift LEFT TABLE");
 
                 // printGameStatus();
                 resetAllCounters();
@@ -118,7 +118,7 @@ public:
             if (m_leftTable.hitSum() == 1)
             {
                 Serial.println("AUFSCHLAG : BAll trift Left Table");
-                Serial.println("State 3.) AUFSCHLAG : Warte das BAll trift Right Table");
+                Serial.println("State 3.) AUFSCHLAG : Warte das BAll trift RIGHT TABLE");
 
                 // printGameStatus();
                 resetAllCounters();
@@ -134,7 +134,7 @@ public:
             {
 
                 Serial.println("AUFSCHLAG : BAll trift Right Table");
-                Serial.println("AUFSCHLAG : Warte das BAll trift Right Racket");
+                Serial.println("AUFSCHLAG : Warte das BAll trift RIGHT RACKET");
 
                 // printGameStatus();
                 resetAllCounters();
@@ -150,7 +150,7 @@ public:
                 Serial.println("AUFSCHLAG : BAll trift Right Racket");
                 Serial.println("AUFSCHLAG Erfolgreich");
                 Serial.println("Starte Ballwechsel");
-                Serial.println("BAllWechsel : Warte das BAll trift Left Table");
+                Serial.println("BAllWechsel : Warte das BAll trift LEFT TABLE");
 
                 // printGameStatus();
                 resetAllCounters();
@@ -173,7 +173,7 @@ public:
             {
                 usbMIDI.sendNoteOff(74, 127, 2);
 
-                Serial.println("Ballwechsel : Warte das BAll trift Left Racket");
+                Serial.println("Ballwechsel : Warte das BAll trift LEFT RACKET");
 
                 resetAllCounters();
                 state = lr_BW;
@@ -186,7 +186,7 @@ public:
             if (m_leftRacket.hitSum() == 1) // Hit Left RACket
             {
                 usbMIDI.sendNoteOn(54, 127, 2);
-                Serial.println("Ballwechsel : Warte das BAll trift Right Table");
+                Serial.println("Ballwechsel : Warte das BAll trift RIGHT TABLE");
 
                 resetAllCounters();
                 state = rt_BW;
@@ -200,7 +200,7 @@ public:
             if (m_rightTable.hitSum() == 1) // Hit Right Table
             {
                 usbMIDI.sendNoteOff(54, 0, 2);
-                Serial.println("Ballwechsel : Warte das BAll trift Right RAcket");
+                Serial.println("Ballwechsel : Warte das BAll trift RIGHT RACKET");
 
                 resetAllCounters();
                 state = rr_BW;
@@ -225,7 +225,7 @@ public:
 
             Serial.print("TOTAL- Ballwechsel : ");
             Serial.println(++totalBallWechselCounter);
-            Serial.println("BAllWechsel : Warte das BAll trift Left Table");
+            Serial.println("BAllWechsel : Warte das BAll trift LEFT TABLE");
 
             // Leave State:
             state = lt_BW;
