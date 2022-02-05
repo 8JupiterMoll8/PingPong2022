@@ -19,8 +19,8 @@
 RF24 radio(21, 20); //CE pin, CSN pin
 const uint64_t ADRESS{0xF0F0F0F0D2LL};
 const byte CHANNEL{121};
-ReciverData racketData;
-Reciver reciver(radio, ADRESS, CHANNEL, racketData);
+ReciverData lr_rf24SensorData;
+Reciver rr_reciver(radio, ADRESS, CHANNEL, lr_rf24SensorData);
 /*
 ███████╗████████╗
 ██╔════╝╚══██╔══╝
@@ -51,7 +51,7 @@ void setup()
   Serial8.begin(9600); // Open Serial8 for EaesyTransfer
 
   ET.begin(details(mydata), &Serial8);
-  reciver.setup();
+  rr_reciver.setup();
   pinMode(24,OUTPUT);
 
 }
@@ -60,9 +60,9 @@ void loop()
 {
  
     blink();
-    reciver.loop();
+    rr_reciver.loop();
     //ET
-    mydata.pz = racketData.pz;
+    mydata.pz = lr_rf24SensorData.pz;
     ET.sendData();
    
 }

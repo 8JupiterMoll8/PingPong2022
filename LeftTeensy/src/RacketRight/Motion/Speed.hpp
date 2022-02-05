@@ -7,14 +7,15 @@ class Speed
 {
 private:
 	ReciverData &m_reciverData;
-	float &m_speed;
-	float &m_speedSmooth;
+	float m_speed ;
+	float m_speedSmooth ;
 	float m_smoothSensitivity = 100;
 
 public:
-	Speed(ReaciverData &reciverData) : m_reciverData(reciverData){
+	Speed(ReciverData &reciverData) : m_reciverData(reciverData)
+	{
 
-									   };
+	};
 
 	void loop()
 	{
@@ -24,16 +25,16 @@ public:
 
 	float smooth()
 	{
-		return m_speedSmooth
+		return m_speedSmooth;
 
 	}
 
 	int setSmoothSensivity(int smoothSensivity)
 	{
-		m_smoothSensitivity = smoothSensivity;
+		return m_smoothSensitivity = smoothSensivity;
 	}
 
-	float normal()
+	float getNormal()
 	{
 		return m_speed ;
 
@@ -49,7 +50,7 @@ private:
 
  
 
-	float calculateTotalSpeed()
+	float  calculateTotalSpeed()
 	{
 		m_speed = sqrtf(powf(m_reciverData.gx, 2) + powf(m_reciverData.gy, 2) + powf(m_reciverData.gz, 2));
 		return m_speed;

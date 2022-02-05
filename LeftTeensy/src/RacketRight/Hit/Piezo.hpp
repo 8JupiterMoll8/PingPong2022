@@ -39,6 +39,7 @@ public:
 		{
 			m_counter.add();
 			//Serial.println("Hit");
+			//Serial.println(m_counter.getSum());
 		   
 		}	
 
