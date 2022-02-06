@@ -33,7 +33,7 @@ class KnightRider
       {
 
         m_AcBulb[circle_Counter] = 10;
-        usbMIDI.sendNoteOn(57+circle_Counter,75,2);
+        usbMIDI.sendNoteOn(57+circle_Counter,75,3);
       }
 
       if (toggleOnOff == 2 && circle_Counter <= 8)
@@ -41,7 +41,7 @@ class KnightRider
       {
 
         m_AcBulb[circle_Counter] = 75;
-         usbMIDI.sendNoteOff(57 + circle_Counter,0,2);
+         usbMIDI.sendNoteOff(57 + circle_Counter,0,3);
 
         toggleOnOff = 0;
         circle_Counter++;

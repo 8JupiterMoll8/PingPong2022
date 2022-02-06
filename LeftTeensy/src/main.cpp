@@ -25,6 +25,9 @@
 #include "RacketLeft.h"
 #include "Table.h"
 #include "GameManager.h"
+#include "MoveNeopixel.h"
+
+
 
 
 /*
@@ -52,9 +55,11 @@
 
 CRGB A_ledStrip[NUM_LEDS];
 CRGB B_ledStrip[NUM_LEDS_2];
+MoveNeopixel moveNeopixel(A_ledStrip);
+MoveNeopixel moveNeopixelA(A_ledStrip);
 
 //Neopixel Ledstrio Animation for Swing
-Comet comet(A_ledStrip);
+//Comet comet(A_ledStrip);
 
 // LightBulb for Animation for Time
 KnightRider knightRider(CH);
@@ -130,7 +135,8 @@ Pressure rr_pressure(rr_rf24SensorData);
 // Left Racket
 RacketRight rightRacket(rr_Piezo, rr_speed, rr_Swing, rr_Mahony, rr_pressure);
 
-//Bargraph bargraph(A_ledStrip, lr_speed);
+// AudioVisual Behaviour
+Bargraph bargraph(A_ledStrip, rightRacket);
 
 /*
 ██╗     ███████╗███████╗████████╗    ████████╗ █████╗ ██████╗ ██╗     ███████╗
@@ -187,6 +193,7 @@ Table rightTable(rt_Piezo);
                                                                                                       
 */
 GameManager gameManger(leftRacket,rightRacket,leftTable,rightTable);
+ //MovePixel movePixel(A_ledStrip);
 
 
 /*
@@ -235,7 +242,43 @@ void loop()
 // Loop RF24
   rr_reciver.loop();
 
-gameManger.loop();
+//gameManger.loop();
+//! Bargraph combinde with midisendNote makes A Swing Sound
+//! Effect
+  bargraph.loop();
+
+
+
+// Light Bulb Speed Slow
+  // static elapsedMillis ms_speed;
+  // knightRider.loop();
+  // if (ms_speed > 1000)
+  // {
+  //   ms_speed = 0;
+    
+  //   static int increment = 0;
+  //   increment = increment + 10;
+  //   Serial.println(increment);
+  //   knightRider.setSpeed(increment);
+  // }
+
+  // Physics Eigen
+  // moveNeopixel.loop();
+  // moveNeopixelA.loop();
+
+  // moveNeopixel.intervall = 50;
+  // moveNeopixel.blue = 0;
+  // moveNeopixel.red = 255;
+  // moveNeopixel.green = 100;
+
+  // moveNeopixelA.intervall = 250;
+  // moveNeopixelA.blue = 255;
+  // moveNeopixelA.red = 255;
+  // moveNeopixelA.green = 100;
+
+
+  
+
 
 
 

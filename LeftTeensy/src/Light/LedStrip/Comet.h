@@ -1,7 +1,9 @@
 #ifndef COMET_H
 #define COMET_H
 #include "SwingEnergizer.h"
-
+#include <WS2812Serial.h>
+#define USE_WS2812SERIAL
+#include <FastLED.h>
 #pragma once
 
 class Comet : public SwingEnergizer
