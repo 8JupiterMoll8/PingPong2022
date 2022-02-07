@@ -33,6 +33,7 @@
 #include "Comet.h"
 #include "Bargraph.h"
 #include "SwingController.h"
+#include "AudioVisualGameManager.h"
 
 
 
@@ -197,7 +198,8 @@ Table rightTable(rt_Piezo);
  ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
                                                                                                       
 */
-GameManager gameManger(leftRacket,rightRacket,leftTable,rightTable);
+//GameManager gameManger(leftRacket,rightRacket,leftTable,rightTable);
+AudioVisualGameManager audiovisualGameManeger(leftRacket,rightRacket,leftTable,rightTable);
  //MovePixel movePixel(A_ledStrip);
 
 
@@ -253,15 +255,16 @@ rightRacket.loop();
 leftTable.loop();
 rightTable.loop();
 // GameManger for Aufschlag and BallwechselCounter
-gameManger.loop();
-
+//gameManger.loop();
+audiovisualGameManeger.loop();
 // Audiovisual Behavior for right Racket
 // Bargraph and Comet right now
 swingController.loop();
 FastLED.show();
 
 
-
+//!This the Time Displayer his speed is dependet from 
+//! From the amount of ballwechsel
 // Light Bulb Speed Slow
   // static elapsedMillis ms_speed;
   // knightRider.loop();
