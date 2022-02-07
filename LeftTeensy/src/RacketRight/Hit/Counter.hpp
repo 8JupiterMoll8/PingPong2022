@@ -13,26 +13,9 @@ public:
 	Counter(int startNumber):m_startNumber(startNumber)
 	{}
 
-	void setStartNumber(int startNumber )
-	{
-	     m_startNumber = startNumber;
-
-
-	}
-
-	int getSum()
-	{
-		return counter;
-
-	}
-
-	void add()
-	{
-		counter++;
-	}
-	void reset()
-	{
-		counter = 0;
-	}
+	void setStartNumber(int startNumber ) {  m_startNumber = startNumber; }
+    int getSum(){ return counter; }
+    void add()  { counter++;      }
+	void reset(){ counter = 0;    }
 };
 #endif

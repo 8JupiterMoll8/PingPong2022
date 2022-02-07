@@ -2,59 +2,65 @@
 #define BARGRAPH_H
 
 #pragma once
-#include "SwingEnergizer.h"
 #include <FastLED.h>
 #include "RacketRight.hpp"
-class Bargraph : public SwingEnergizer
+class Bargraph
 {
 private:
-  CRGB (&m_A_ledStrip)[134];
-  RacketRight &m_rightRacket;
-  float ledCount = 134.0;
+  CRGB (&m_A_ledStrip)
+  [134];
+  const float ledCount = 134.0;
+  float m_speed = 0;
+  float m_speed_max = 0.0;
+  float m_speed_min = 30.0;
 
 public:
-  Bargraph(CRGB (&ledStrip)[134], RacketRight &racketRight)
-      : m_A_ledStrip(ledStrip),
-        m_rightRacket(racketRight)
+  Bargraph(CRGB (&ledStrip)[134]) : m_A_ledStrip(ledStrip)
   {
   }
 
 public:
-    virtual void loop() override
+  void loop()
+  {
+    // map the result to a range from 0 to the number of LEDs:
+    int ledLevel = map(m_speed, m_speed_min, m_speed_max , 0.0, ledCount);
+
+    // Serial.println(ledLevel);
+    // delay(10);
+
+    // loop over the LED array:
+    for (int thisLed = 0; thisLed < ledCount; thisLed++)
     {
-         m_rightRacket.loop();
-         float speed = m_rightRacket.speed();
-         FastLED.show();
+      // if the array element's index is less than ledLevel,
+      // turn the pin for this element on:
+      if (thisLed < ledLevel)
+      {
+        m_A_ledStrip[thisLed] += CRGB(255, 255, 255);
+        usbMIDI.sendNoteOn(thisLed, 75, 3);
+     
+      for (int j = 0; j < ledLevel; j++)
+      {
+       
+          m_A_ledStrip[j] += m_A_ledStrip[j].fadeToBlackBy(180 - j );
+      }
 
-        // map the result to a range from 0 to the number of LEDs:
-        int ledLevel = map(speed, 0.0, 30.0, 0.0, ledCount);
 
-        //Serial.println(ledLevel);
-        //delay(10);
+      }
+      // turn off all pins higher than the ledLevel:
+      else
+      {
+        usbMIDI.sendNoteOff(thisLed, 0, 3);
+        m_A_ledStrip[thisLed] = m_A_ledStrip[thisLed].fadeToBlackBy(34);
+      }
+    }
+  }
 
-        // loop over the LED array:
-        for (int thisLed = 0; thisLed < ledCount; thisLed++)
-        {
-            // if the array element's index is less than ledLevel,
-            // turn the pin for this element on:
-            if (thisLed < ledLevel)
-            {
-                m_A_ledStrip[thisLed].setRGB(255,255,255);
-                usbMIDI.sendNoteOn(thisLed,75,2);
-                //m_A_ledStrip[thisLed].nscale8(255);
-               
-            }
-            // turn off all pins higher than the ledLevel:
-            else
-            {
-                 m_A_ledStrip[thisLed].setRGB(0,0,0);
-                  usbMIDI.sendNoteOff(thisLed,0,2);
-               // m_A_ledStrip[thisLed].nscale8(0);
-                  
-            }
-           
-        }
-    }  
+  void setMapSpeed(float input, float min,float max )
+  {
+      m_speed     = input;
+      m_speed_min = min;
+      m_speed_max = max;
+  }
 };
 
 #endif

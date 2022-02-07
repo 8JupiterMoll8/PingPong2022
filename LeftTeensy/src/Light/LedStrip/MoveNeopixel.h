@@ -4,8 +4,6 @@
 #pragma once
 #include <Eigen.h>  // Calls main Eigen matrix class library
 #include <Eigen/LU>  // Calls inverse, determinant, LU decomp., etc.
-#include <WS2812Serial.h>
-#define USE_WS2812SERIAL
 #include <FastLED.h>
 
 using namespace Eigen;  // Eigen related statement; simplifies syntax for

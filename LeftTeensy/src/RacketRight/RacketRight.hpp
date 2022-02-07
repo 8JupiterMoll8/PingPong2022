@@ -5,8 +5,7 @@
 #include "Speed.hpp"
 #include "Swing.hpp"
 #include "Mahony.hpp"
-#include "Pressure.hpp"
-
+#include "Pressure.hpp" 
 class RacketRight
 {
 private:
@@ -19,19 +18,23 @@ private:
 	//Button Behaviour
 	Pressure &m_pressure;
 
+
+
 public:
-	RacketRight(Piezo &piezo, Speed &speed, Swing &swing, Mahony &mahony, Pressure &pressure) : 
+	RacketRight(Piezo &piezo,  Speed &speed, Swing &swing, Mahony &mahony, Pressure &pressure): 
 	m_piezo(piezo),
     m_speed(speed),
 	m_swing(swing),
 	m_mahony(mahony),
     m_pressure(pressure)
 	{
+		
 	}
+	
 
 	void loop()
 	{
-		m_piezo.loop();
+     	m_piezo.loop();
 		m_swing.loop();
 		m_speed.loop();
 		m_mahony.loop();
@@ -53,5 +56,6 @@ public:
 	float yaw()   { return m_mahony.yaw();}
 	//PRESSURE BUTTON
 	int pressure(){ return m_pressure.value();}
+	
 };
 #endif

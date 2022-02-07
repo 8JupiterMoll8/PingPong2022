@@ -1,32 +1,115 @@
 #ifndef COMET_H
 #define COMET_H
-#include "SwingEnergizer.h"
-#include <WS2812Serial.h>
-#define USE_WS2812SERIAL
+
 #include <FastLED.h>
 #pragma once
 
-class Comet : public SwingEnergizer
+class Comet
 {
-private:
-  CRGB (&m_A_ledStrip)
-  [134];
 
 public:
-  Comet(CRGB (&ledStrip)[134])
-      : m_A_ledStrip(ledStrip)
-  {
-  }
+  Comet(CRGB (&ledStrip)[134]): A_leds(ledStrip){} 
 
- virtual void loop() override
+  void loop()
   {
-    for (int i = 0; i < 100; i++)
+    switch (state)
     {
-      m_A_ledStrip[i].setRGB(255, 255, 255);
-      m_A_ledStrip[i].nscale8(55);
-      FastLED.show();
+    case WAIT:
+      //Leave State:
+      if(m_animationCometStart == true) 
+         state = START;
+      break;
+
+    case START:
+      //Do:
+      animationComet();
+      //Leave State
+      if(animationCometIsEnd())
+      {
+        state = END; 
+
+      }
+      break;
+
+    case END:
+      //Do:
+       m_animationCometStart = false;
+      //Leave State
+      state = WAIT;
+      break;
+
+    default:
+      break;
     }
   }
+  // Behaviours
+  void start()                   { m_animationCometStart = true; }
+  void reverseDirection()        { m_iDirection *= -1;           }
+  void setSpeed(float speed)     { m_speed       = speed;        }
+  void setFadeSize(int fadeSize) { m_fadeAmt     = fadeSize;     }
+  void setSize(int size)         { m_size        = size;         }
+  void setMidiVelocity(int v)    { m_midiVelocity = v;           }
+
+  boolean animationCometIsEnd()
+  {
+    // Check if Comet hits end and reverse Direction
+    if (m_iPos >= (NUM_LEDS - m_size) || m_iPos <= 0)
+    {
+      // reverseDirection();
+      m_iPos = 0;
+      FastLED.clear();
+
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+
+  void animationComet()
+  {
+    if (ms > 20)
+    {
+      ms = 0;
+
+      m_iPos += m_iDirection * m_speed;
+
+      // Move a 5 LedGroup Forward
+      for (int i = 0; i < m_size; i++)
+      {
+        A_leds[(int)m_iPos + i] += CRGB(255, 255, 255);
+        
+        usbMIDI.sendNoteOn(m_iPos, m_midiVelocity, 2);
+        //! Oprator Synth leads
+      }
+
+      // Randomly fade the LEDs
+      for (int j = 0; j < NUM_LEDS; j++)
+      {
+        if (random(10) > 5)
+          A_leds[j] += A_leds[j].fadeToBlackBy(m_fadeAmt);
+      
+       usbMIDI.sendNoteOff(j, 75, 2);
+      }
+    }
+  }
+private:
+  CRGB (&A_leds)[134];
+  const int NUM_LEDS = 134;
+
+  byte    m_fadeAmt = 34;
+  int     m_size = 2;
+  float   m_speed = 7.0;
+  float   m_iPos = 0.0;
+  float   m_iDirection = 1.0;
+  byte    m_midiVelocity = 75;
+  boolean m_animationCometStart = false;
+
+  elapsedMillis ms;
+  enum States { WAIT, START, END};
+  States state = WAIT;
 };
 
 #endif

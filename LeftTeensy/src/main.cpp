@@ -1,4 +1,7 @@
 #include <Arduino.h>
+#include <WS2812Serial.h>
+#define USE_WS2812SERIAL
+#include <FastLED.h>
 #include <SPI.h>
 #include "printf.h"
 #include "RF24.h"
@@ -26,6 +29,10 @@
 #include "Table.h"
 #include "GameManager.h"
 #include "MoveNeopixel.h"
+#include "KnightRider.h"
+#include "Comet.h"
+#include "Bargraph.h"
+#include "SwingController.h"
 
 
 
@@ -40,12 +47,7 @@
 
 */
 
-#include <WS2812Serial.h>
-#define USE_WS2812SERIAL
-#include <FastLED.h>
-#include "KnightRider.h"
-#include "Comet.h"
-#include "Bargraph.h"
+
 
 // How many leds in your strip?
 #define NUM_LEDS 134
@@ -55,14 +57,13 @@
 
 CRGB A_ledStrip[NUM_LEDS];
 CRGB B_ledStrip[NUM_LEDS_2];
-MoveNeopixel moveNeopixel(A_ledStrip);
-MoveNeopixel moveNeopixelA(A_ledStrip);
+//MoveNeopixel moveNeopixel(A_ledStrip);
+//MoveNeopixel moveNeopixelA(A_ledStrip);
 
 //Neopixel Ledstrio Animation for Swing
-//Comet comet(A_ledStrip);
 
 // LightBulb for Animation for Time
-KnightRider knightRider(CH);
+//KnightRider knightRider(CH);
 
 
 
@@ -135,8 +136,12 @@ Pressure rr_pressure(rr_rf24SensorData);
 // Left Racket
 RacketRight rightRacket(rr_Piezo, rr_speed, rr_Swing, rr_Mahony, rr_pressure);
 
-// AudioVisual Behaviour
-Bargraph bargraph(A_ledStrip, rightRacket);
+// AudioVisual Behaviour for Swing without Ballcontact
+Bargraph bargraph(A_ledStrip);
+// AudioVisual Behaviour for Swing after Ballcontact
+Comet comet(A_ledStrip);
+SwingController swingController(comet,bargraph,rightRacket);
+
 
 /*
 ██╗     ███████╗███████╗████████╗    ████████╗ █████╗ ██████╗ ██╗     ███████╗
@@ -215,8 +220,8 @@ void setup()
   setup_Dimmer();
 
   // Init WS2182B
-  LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>(A_ledStrip, NUM_LEDS);
-  LEDS.addLeds<WS2812SERIAL, DATA_PIN_2, RGB>(B_ledStrip, NUM_LEDS_2);
+  LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>(A_ledStrip, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  LEDS.addLeds<WS2812SERIAL, DATA_PIN_2, RGB>(B_ledStrip, 74);
   LEDS.setBrightness(255);
 
   // Init EasyTransfer
@@ -241,11 +246,19 @@ void loop()
   ET.receiveData();
 // Loop RF24
   rr_reciver.loop();
+//! Loop only one loop for each obeject
+// Physical GameObjects
+leftRacket.loop();
+rightRacket.loop();
+leftTable.loop();
+rightTable.loop();
+// GameManger for Aufschlag and BallwechselCounter
+gameManger.loop();
 
-//gameManger.loop();
-//! Bargraph combinde with midisendNote makes A Swing Sound
-//! Effect
-  bargraph.loop();
+// Audiovisual Behavior for right Racket
+// Bargraph and Comet right now
+swingController.loop();
+FastLED.show();
 
 
 

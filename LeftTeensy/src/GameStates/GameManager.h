@@ -3,6 +3,8 @@
 #include"RacketRight.hpp"
 #include "RacketLeft.h"
 #include "Table.h"
+
+
 #pragma once
 // The Gamem
 class GameManager
@@ -57,10 +59,8 @@ public:
 
     void loop()
     {
-     m_leftRacket.loop();
-     m_rightRacket.loop();
-     m_leftTable.loop();
-     m_rightTable.loop();
+  ;
+     
 
         switch (state)
         {
@@ -104,6 +104,8 @@ public:
             {
                 Serial.println("AUFSCHLAG : BAll trift Left Racket");
                 Serial.println("State 2.)AUFSCHLAG : Warte das BAll trift LEFT TABLE");
+                
+                usbMIDI.sendNoteOn(54,75,4);
 
                 // printGameStatus();
                 resetAllCounters();
@@ -120,7 +122,9 @@ public:
                 Serial.println("AUFSCHLAG : BAll trift Left Table");
                 Serial.println("State 3.) AUFSCHLAG : Warte das BAll trift RIGHT TABLE");
 
+                usbMIDI.sendNoteOn(64,75,4);
                 // printGameStatus();
+
                 resetAllCounters();
                 state = rt_AS;
             }
@@ -132,10 +136,11 @@ public:
             //  Leave State:
             if (m_rightTable.hitSum() == 1)
             {
-
+                
                 Serial.println("AUFSCHLAG : BAll trift Right Table");
                 Serial.println("AUFSCHLAG : Warte das BAll trift RIGHT RACKET");
-
+                usbMIDI.sendNoteOn(44,75,4);
+                 
                 // printGameStatus();
                 resetAllCounters();
                 state = rr_AS;
@@ -144,9 +149,16 @@ public:
 
         case rr_AS:
             // Do
+            
+             
             //  Leave State:
+         
+
             if (m_rightRacket.hitSum() == 1)
             {
+                usbMIDI.sendNoteOn(44,75,4);
+                 
+             
                 Serial.println("AUFSCHLAG : BAll trift Right Racket");
                 Serial.println("AUFSCHLAG Erfolgreich");
                 Serial.println("Starte Ballwechsel");
@@ -168,10 +180,12 @@ public:
       */
         case lt_BW:
             // Do
+             
+           
             //  Leave State:
             if (m_leftTable.hitSum() == 1) // Hit Left Table
             {
-                usbMIDI.sendNoteOff(74, 127, 2);
+                usbMIDI.sendNoteOn(74, 127, 4);
 
                 Serial.println("Ballwechsel : Warte das BAll trift LEFT RACKET");
 
@@ -185,7 +199,7 @@ public:
             //  Leave State:
             if (m_leftRacket.hitSum() == 1) // Hit Left RACket
             {
-                usbMIDI.sendNoteOn(54, 127, 2);
+                usbMIDI.sendNoteOn(54, 127, 4);
                 Serial.println("Ballwechsel : Warte das BAll trift RIGHT TABLE");
 
                 resetAllCounters();
@@ -199,7 +213,7 @@ public:
             // Leave State:
             if (m_rightTable.hitSum() == 1) // Hit Right Table
             {
-                usbMIDI.sendNoteOff(54, 0, 2);
+                usbMIDI.sendNoteOn(24, 127, 4);
                 Serial.println("Ballwechsel : Warte das BAll trift RIGHT RACKET");
 
                 resetAllCounters();
@@ -212,7 +226,7 @@ public:
             //  Leave State:
             if (m_rightRacket.hitSum() == 1) // Hit Right Racket
             {
-                usbMIDI.sendNoteOn(74, 127, 2);
+                usbMIDI.sendNoteOn(74, 127, 4);
                 Serial.println("Ballwechsel : Erfolgreich");
 
                 resetAllCounters();

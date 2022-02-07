@@ -30,13 +30,12 @@ public:
 	
 
 
-   boolean getHit()
-   {
-	   return *ptr;
+   boolean getHit() { return *ptr; }
 
-   }
+private: 
+void hitReleased() { *ptr = false; }
 
-private: void hitReleased() { *ptr = false; }
+
 public:
 	void loop()
 	{
