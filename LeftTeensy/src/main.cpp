@@ -33,7 +33,7 @@
 #include "Comet.h"
 #include "Bargraph.h"
 #include "SwingController.h"
-#include "AudioVisualGameManager.h"
+#include "PingPongManger.h"
 
 
 
@@ -64,7 +64,7 @@ CRGB B_ledStrip[NUM_LEDS_2];
 //Neopixel Ledstrio Animation for Swing
 
 // LightBulb for Animation for Time
-//KnightRider knightRider(CH);
+KnightRider knightRider(CH);
 
 
 
@@ -199,7 +199,7 @@ Table rightTable(rt_Piezo);
                                                                                                       
 */
 //GameManager gameManger(leftRacket,rightRacket,leftTable,rightTable);
-AudioVisualGameManager audiovisualGameManeger(leftRacket,rightRacket,leftTable,rightTable);
+PingPongManger pingpongManager(leftRacket,rightRacket,leftTable,rightTable);
  //MovePixel movePixel(A_ledStrip);
 
 
@@ -256,7 +256,7 @@ leftTable.loop();
 rightTable.loop();
 // GameManger for Aufschlag and BallwechselCounter
 //gameManger.loop();
-audiovisualGameManeger.loop();
+pingpongManager.loop();
 // Audiovisual Behavior for right Racket
 // Bargraph and Comet right now
 swingController.loop();
@@ -266,17 +266,17 @@ FastLED.show();
 //!This the Time Displayer his speed is dependet from 
 //! From the amount of ballwechsel
 // Light Bulb Speed Slow
-  // static elapsedMillis ms_speed;
-  // knightRider.loop();
-  // if (ms_speed > 1000)
-  // {
-  //   ms_speed = 0;
+  static elapsedMillis ms_speed;
+  //knightRider.loop();
+  if (ms_speed > 1000)
+  {
+    ms_speed = 0;
     
-  //   static int increment = 0;
-  //   increment = increment + 10;
-  //   Serial.println(increment);
-  //   knightRider.setSpeed(increment);
-  // }
+    static int increment = 0;
+    increment = increment + 10;
+    //Serial.println(increment);
+    knightRider.setSpeed(increment);
+  }
 
   // Physics Eigen
   // moveNeopixel.loop();

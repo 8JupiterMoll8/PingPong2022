@@ -15,7 +15,7 @@ RacketLeft  &m_leftRacket;
 RacketRight &m_rightRacket;
 Table       &m_leftTable;
 Table       &m_rightTable;
-int         totalBallWechselCounter = 0;
+int         m_totalBallWechselCounter = 0;
 
 protected:
 virtual void lr_hitAufschlag() = 0;
@@ -132,7 +132,7 @@ public:
             //Leave State Error Check:
             if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_rightTable.hitSum() == 1  )
                 {
-                    Serial.println("ERROR AUFSCHALG");
+                    Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
                     state = START;
                     resetAllCounters();
@@ -155,7 +155,7 @@ public:
             //Leave State Error Check:
             if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
                 {
-                    Serial.println("ERROR AUFSCHALG");
+                    Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
                     state = START;
                     resetAllCounters();
@@ -179,7 +179,7 @@ public:
             //Leave State Error Check:
             if (m_leftRacket.hitSum() == 1 || m_rightTable.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
                 {
-                    Serial.println("ERROR AUFSCHALG");
+                    Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
                     state = START;
                     resetAllCounters();
@@ -213,7 +213,7 @@ public:
             //Leave State Error Check:
             if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_rightTable.hitSum() == 1  )
                 {
-                    Serial.println("ERROR AUFSCHALG");
+                    Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
                     state = START;
                     resetAllCounters();
@@ -234,7 +234,7 @@ public:
             //Leave State Error Check:
             if (m_leftTable.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
                 {
-                    Serial.println("ERROR AUFSCHALG");
+                    Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
                     state = START;
                     resetAllCounters();
@@ -254,7 +254,7 @@ public:
             //Leave State Error Check:
             if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
                 {
-                    Serial.println("ERROR AUFSCHALG");
+                    Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
                     state = START;
                     resetAllCounters();
@@ -272,9 +272,9 @@ public:
 
         case rr_BW:
             //Leave State Error Check:
-            if (m_leftRacket.hitSum() == 1 || m_right.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
+            if (m_leftRacket.hitSum() == 1 || m_rightTable.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
                 {
-                    Serial.println("ERROR AUFSCHALG");
+                    Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
                     state = START;
                     resetAllCounters();
@@ -294,7 +294,7 @@ public:
             // Do
 
             Serial.print("TOTAL- Ballwechsel : ");
-            Serial.println(++totalBallWechselCounter);
+            Serial.println(++m_totalBallWechselCounter);
             Serial.println("BAllWechsel : Warte das BAll trift LEFT TABLE");
 
             // Leave State:
