@@ -9,13 +9,26 @@
 // The Gamem
 class GameManager
 {
-private:
+protected:
 
 RacketLeft  &m_leftRacket;
 RacketRight &m_rightRacket;
 Table       &m_leftTable;
 Table       &m_rightTable;
-int totalBallWechselCounter = 0;
+int         totalBallWechselCounter = 0;
+
+protected:
+virtual void lr_hitAufschlag() = 0;
+virtual void lt_hitAufschalg() = 0;
+virtual void rr_hitAufschlag() = 0;
+virtual void rt_hitAufschlag() = 0;
+
+virtual void lr_hitBallwechsel() = 0;
+virtual void lt_hitBallwechsel() = 0;
+virtual void rr_hitBallwechsel() = 0;
+virtual void rt_hitBallwechsel() = 0;
+
+virtual void error() = 0;
 
     /*
     ███████╗████████╗ █████╗ ████████╗███████╗███████╗
@@ -53,16 +66,14 @@ public:
     {
     }
 
-    void setup()
-    {
-    }
+  
 
     void loop()
     {
-  ;
+  
      
 
-        switch (state)
+    switch (state)
         {
         /*
       ███████╗████████╗ █████╗ ██████╗ ████████╗
@@ -86,60 +97,77 @@ public:
 
             // Leave State:
             break;
-        /*
-       █████╗ ██╗   ██╗███████╗███████╗ ██████╗██╗  ██╗██╗      █████╗  ██████╗
-      ██╔══██╗██║   ██║██╔════╝██╔════╝██╔════╝██║  ██║██║     ██╔══██╗██╔════╝
-      ███████║██║   ██║█████╗  ███████╗██║     ███████║██║     ███████║██║  ███╗
-      ██╔══██║██║   ██║██╔══╝  ╚════██║██║     ██╔══██║██║     ██╔══██║██║   ██║
-      ██║  ██║╚██████╔╝██║     ███████║╚██████╗██║  ██║███████╗██║  ██║╚██████╔╝
-      ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝
-      */
+
+
+/*            
+██╗     ███████╗███████╗████████╗     █████╗ ██╗   ██╗███████╗ ██████╗██╗  ██╗██╗      █████╗  ██████╗ 
+██║     ██╔════╝██╔════╝╚══██╔══╝    ██╔══██╗██║   ██║██╔════╝██╔════╝██║  ██║██║     ██╔══██╗██╔════╝ 
+██║     █████╗  █████╗     ██║       ███████║██║   ██║███████╗██║     ███████║██║     ███████║██║  ███╗
+██║     ██╔══╝  ██╔══╝     ██║       ██╔══██║██║   ██║╚════██║██║     ██╔══██║██║     ██╔══██║██║   ██║
+███████╗███████╗██║        ██║       ██║  ██║╚██████╔╝███████║╚██████╗██║  ██║███████╗██║  ██║╚██████╔╝
+╚══════╝╚══════╝╚═╝        ╚═╝       ╚═╝  ╚═╝ ╚═════╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝ 
+ */
         // States: Hit Left Racket >> Hit Left Table >> Hit Right Table >> Hit Right Racket
         // >> Succseful Aufschlag
         case lr_AS:
             // Do
-
             // Leave State:
             if (m_leftRacket.hitSum() == 1)
             {
                 Serial.println("AUFSCHLAG : BAll trift Left Racket");
                 Serial.println("State 2.)AUFSCHLAG : Warte das BAll trift LEFT TABLE");
                 
-                usbMIDI.sendNoteOn(54,75,4);
-
-                // printGameStatus();
+                lr_hitAufschlag();
                 resetAllCounters();
                 state = lt_AS;
-            }
 
+                // printGameStatus();
+              
+               
+              
+            }
             break;
 
         case lt_AS:
-            // Do
-            //  Leave State:
+            //Leave State Error Check:
+            if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_rightTable.hitSum() == 1  )
+                {
+                    Serial.println("ERROR AUFSCHALG");
+                    error();
+                    state = START;
+                    resetAllCounters();
+                }
+            //Leave State:
             if (m_leftTable.hitSum() == 1)
             {
                 Serial.println("AUFSCHLAG : BAll trift Left Table");
                 Serial.println("State 3.) AUFSCHLAG : Warte das BAll trift RIGHT TABLE");
 
-                usbMIDI.sendNoteOn(64,75,4);
+                lt_hitAufschalg();
                 // printGameStatus();
 
                 resetAllCounters();
                 state = rt_AS;
             }
-
             break;
 
         case rt_AS:
-            // Do
-            //  Leave State:
+            //Leave State Error Check:
+            if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
+                {
+                    Serial.println("ERROR AUFSCHALG");
+                    error();
+                    state = START;
+                    resetAllCounters();
+                }
+            //Leave State:
             if (m_rightTable.hitSum() == 1)
             {
                 
                 Serial.println("AUFSCHLAG : BAll trift Right Table");
                 Serial.println("AUFSCHLAG : Warte das BAll trift RIGHT RACKET");
-                usbMIDI.sendNoteOn(44,75,4);
+                
+                rt_hitAufschlag();
                  
                 // printGameStatus();
                 resetAllCounters();
@@ -148,15 +176,18 @@ public:
             break;
 
         case rr_AS:
-            // Do
-            
-             
-            //  Leave State:
-         
-
+            //Leave State Error Check:
+            if (m_leftRacket.hitSum() == 1 || m_rightTable.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
+                {
+                    Serial.println("ERROR AUFSCHALG");
+                    error();
+                    state = START;
+                    resetAllCounters();
+                }
+            //Leave State:     
             if (m_rightRacket.hitSum() == 1)
             {
-                usbMIDI.sendNoteOn(44,75,4);
+                rr_hitAufschlag();
                  
              
                 Serial.println("AUFSCHLAG : BAll trift Right Racket");
@@ -179,13 +210,18 @@ public:
       ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝ ╚══╝╚══╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
       */
         case lt_BW:
-            // Do
-             
-           
-            //  Leave State:
+            //Leave State Error Check:
+            if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_rightTable.hitSum() == 1  )
+                {
+                    Serial.println("ERROR AUFSCHALG");
+                    error();
+                    state = START;
+                    resetAllCounters();
+                }
+            //Leave State:
             if (m_leftTable.hitSum() == 1) // Hit Left Table
             {
-                usbMIDI.sendNoteOn(74, 127, 4);
+                lt_hitBallwechsel();
 
                 Serial.println("Ballwechsel : Warte das BAll trift LEFT RACKET");
 
@@ -195,11 +231,18 @@ public:
             break;
 
         case lr_BW:
-            // Dou
-            //  Leave State:
+            //Leave State Error Check:
+            if (m_leftTable.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
+                {
+                    Serial.println("ERROR AUFSCHALG");
+                    error();
+                    state = START;
+                    resetAllCounters();
+                }
+            // Leave State:
             if (m_leftRacket.hitSum() == 1) // Hit Left RACket
             {
-                usbMIDI.sendNoteOn(54, 127, 4);
+                lr_hitBallwechsel();
                 Serial.println("Ballwechsel : Warte das BAll trift RIGHT TABLE");
 
                 resetAllCounters();
@@ -208,12 +251,18 @@ public:
             break;
 
         case rt_BW:
-            // Do
-
+            //Leave State Error Check:
+            if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
+                {
+                    Serial.println("ERROR AUFSCHALG");
+                    error();
+                    state = START;
+                    resetAllCounters();
+                }
             // Leave State:
             if (m_rightTable.hitSum() == 1) // Hit Right Table
             {
-                usbMIDI.sendNoteOn(24, 127, 4);
+                rt_hitBallwechsel();
                 Serial.println("Ballwechsel : Warte das BAll trift RIGHT RACKET");
 
                 resetAllCounters();
@@ -222,11 +271,18 @@ public:
             break;
 
         case rr_BW:
-            // Do
+            //Leave State Error Check:
+            if (m_leftRacket.hitSum() == 1 || m_right.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
+                {
+                    Serial.println("ERROR AUFSCHALG");
+                    error();
+                    state = START;
+                    resetAllCounters();
+                }
             //  Leave State:
             if (m_rightRacket.hitSum() == 1) // Hit Right Racket
             {
-                usbMIDI.sendNoteOn(74, 127, 4);
+               rr_hitBallwechsel();
                 Serial.println("Ballwechsel : Erfolgreich");
 
                 resetAllCounters();
@@ -251,29 +307,7 @@ public:
     }
 
 private:
-    /*
-    ███████╗███████╗██╗  ██╗██╗     ███████╗██████╗
-    ██╔════╝██╔════╝██║  ██║██║     ██╔════╝██╔══██╗
-    █████╗  █████╗  ███████║██║     █████╗  ██████╔╝
-    ██╔══╝  ██╔══╝  ██╔══██║██║     ██╔══╝  ██╔══██╗
-    ██║     ███████╗██║  ██║███████╗███████╗██║  ██║
-    ╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝
-    */
-    // Restart Game
-    // Rule: The Ball does never hit two times at the Table or Racket and does fall to earth
-    boolean isFehler()
-    {
-        
-        if (m_leftRacket.hitSum() > 1 || m_leftTable.hitSum() > 1 || m_rightTable.hitSum() > 1 || m_rightRacket.hitSum() > 1)
-        {
 
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
     /*
     ██████╗ ███████╗███████╗███████╗████████╗
     ██╔══██╗██╔════╝██╔════╝██╔════╝╚══██╔══╝
