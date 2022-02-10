@@ -3,12 +3,12 @@
 #pragma once
 #include "Comet.h"
 #include "Bargraph.h"
-#include "RacketRight.hpp"
+#include "Racket.hpp"
 
 class SwingController
 {
 public:
-    SwingController(Comet &comet, Bargraph &bargraph, RacketRight &racketRight) :
+    SwingController(Comet &comet, Bargraph &bargraph, Racket &racketRight) :
     m_comet(comet),
     m_bargraph(bargraph),
     m_rightRacket(racketRight)
@@ -40,7 +40,7 @@ public:
 private:
     Comet       &m_comet;
     Bargraph    &m_bargraph;
-    RacketRight &m_rightRacket;
+    Racket &m_rightRacket;
 };
 
 #endif

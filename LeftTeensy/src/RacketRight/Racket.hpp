@@ -1,12 +1,12 @@
-#ifndef RACKETRIGHT_H
-#define RACKETRIGHT_H
+#ifndef RACKET_H
+#define RACKET_H
 #pragma once
 #include "Piezo.hpp"
 #include "Speed.hpp"
 #include "Swing.hpp"
 #include "Mahony.hpp"
 #include "Pressure.hpp" 
-class RacketRight
+class Racket
 {
 private:
 	//Hit Behaviour
@@ -21,7 +21,7 @@ private:
 
 
 public:
-	RacketRight(Piezo &piezo,  Speed &speed, Swing &swing, Mahony &mahony, Pressure &pressure): 
+	Racket(Piezo &piezo,  Speed &speed, Swing &swing, Mahony &mahony, Pressure &pressure): 
 	m_piezo(piezo),
     m_speed(speed),
 	m_swing(swing),

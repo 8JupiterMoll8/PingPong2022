@@ -1,6 +1,6 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
-#include"RacketRight.hpp"
+#include"Racket.hpp"
 #include "RacketLeft.h"
 #include "Table.h"
 
@@ -12,7 +12,7 @@ class GameManager
 protected:
 
 RacketLeft  &m_leftRacket;
-RacketRight &m_rightRacket;
+Racket &m_rightRacket;
 Table       &m_leftTable;
 Table       &m_rightTable;
 int         m_totalBallWechselCounter = 0;
@@ -28,7 +28,9 @@ virtual void lt_hitBallwechsel() = 0;
 virtual void rr_hitBallwechsel() = 0;
 virtual void rt_hitBallwechsel() = 0;
 
-virtual void error() = 0;
+virtual void error()          = 0;
+virtual void ok_Ballwachsel() = 0;
+
 
     /*
     ███████╗████████╗ █████╗ ████████╗███████╗███████╗
@@ -58,7 +60,7 @@ virtual void error() = 0;
 
 
 public:
-    GameManager(RacketLeft &leftRacket, RacketRight &rightRacket, Table &leftTable, Table&rightTable):
+    GameManager(RacketLeft &leftRacket, Racket &rightRacket, Table &leftTable, Table&rightTable):
     m_leftRacket(leftRacket),
     m_rightRacket(rightRacket),
     m_leftTable(leftTable),
@@ -296,7 +298,8 @@ public:
             Serial.print("TOTAL- Ballwechsel : ");
             Serial.println(++m_totalBallWechselCounter);
             Serial.println("BAllWechsel : Warte das BAll trift LEFT TABLE");
-
+            ok_Ballwachsel();
+          
             // Leave State:
             state = lt_BW;
             break;

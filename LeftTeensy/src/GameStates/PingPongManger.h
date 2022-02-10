@@ -6,12 +6,21 @@
 class PingPongManger : public GameManager
 {
 public:
-    PingPongManger(RacketLeft &leftRacket, RacketRight &rightRacket, Table &leftTable, Table &rightTable) :
+    PingPongManger(RacketLeft &leftRacket, Racket &rightRacket, Table &leftTable, Table &rightTable) :
     GameManager(leftRacket, rightRacket, leftTable, rightTable)
     {
     }
 
 private:
+/*
+ █████╗ ██╗   ██╗███████╗███████╗ ██████╗██╗  ██╗██╗      █████╗  ██████╗ 
+██╔══██╗██║   ██║██╔════╝██╔════╝██╔════╝██║  ██║██║     ██╔══██╗██╔════╝ 
+███████║██║   ██║█████╗  ███████╗██║     ███████║██║     ███████║██║  ███╗
+██╔══██║██║   ██║██╔══╝  ╚════██║██║     ██╔══██║██║     ██╔══██║██║   ██║
+██║  ██║╚██████╔╝██║     ███████║╚██████╗██║  ██║███████╗██║  ██║╚██████╔╝
+╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝ ╚═════╝ 
+                                                                          
+*/
     virtual void lr_hitAufschlag() override
     {
         usbMIDI.sendNoteOn(random(32, 73), 127, 4);
@@ -31,8 +40,14 @@ private:
     {
         usbMIDI.sendNoteOn(random(32, 73), 127, 4);
     };
-
-
+/*
+██████╗  █████╗ ██╗     ██╗         ██╗    ██╗███████╗ ██████╗██╗  ██╗███████╗███████╗██╗     
+██╔══██╗██╔══██╗██║     ██║         ██║    ██║██╔════╝██╔════╝██║  ██║██╔════╝██╔════╝██║     
+██████╔╝███████║██║     ██║         ██║ █╗ ██║█████╗  ██║     ███████║███████╗█████╗  ██║     
+██╔══██╗██╔══██║██║     ██║         ██║███╗██║██╔══╝  ██║     ██╔══██║╚════██║██╔══╝  ██║     
+██████╔╝██║  ██║███████╗███████╗    ╚███╔███╔╝███████╗╚██████╗██║  ██║███████║███████╗███████╗
+╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝     ╚══╝╚══╝ ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝
+ */                                                                                             
     virtual void lr_hitBallwechsel() override
     {
         usbMIDI.sendNoteOn(random(32, 73), 127, 4);
@@ -53,9 +68,27 @@ private:
         usbMIDI.sendNoteOn(random(32, 73), 127, 4);
     };
 
+    virtual void ok_Ballwachsel() override
+    {
+         usbMIDI.sendControlChange(73,127,19);
+    }
+
+    virtual int  getTotalBallwechsel() 
+    {
+
+    }
+/*
+███████╗██████╗ ██████╗  ██████╗ ██████╗ 
+██╔════╝██╔══██╗██╔══██╗██╔═══██╗██╔══██╗
+█████╗  ██████╔╝██████╔╝██║   ██║██████╔╝
+██╔══╝  ██╔══██╗██╔══██╗██║   ██║██╔══██╗
+███████╗██║  ██║██║  ██║╚██████╔╝██║  ██║
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝
+                                         
+*/
     virtual void error() override
     {
-         usbMIDI.ControlChange(78,127,9);
+         usbMIDI.sendControlChange(72,127,19);
     }
 
 };

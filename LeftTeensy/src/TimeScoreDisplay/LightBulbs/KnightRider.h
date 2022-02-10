@@ -5,12 +5,12 @@
 
 class KnightRider
 {
-  public:
+ private:
   unsigned char (&m_AcBulb)[8];
-  elapsedMillis sinceTest1;
-  int intervall     = 25;
+  elapsedMillis  m_ms;
+  int intervall = 25;
  
-
+public:
   KnightRider(unsigned char (&acBulb)[8]) : m_AcBulb(acBulb)
   {
   }
@@ -19,28 +19,26 @@ class KnightRider
   {
        
    static int circle_Counter = 0; 
-  
    static int toggleOnOff    = 0;   
    
 
-    if (sinceTest1 >= intervall)
+    if (m_ms >= intervall)
     {
-      sinceTest1 = sinceTest1 - intervall;
-     // Serial.println(  ++intervall*10);
-      toggleOnOff++;
+      m_ms = m_ms - intervall;
+
+      toggleOnOff++; // 1, 2
 
       if (toggleOnOff == 1 && circle_Counter <= 8)
       {
 
-        m_AcBulb[circle_Counter] = 10;
+        m_AcBulb[circle_Counter] = 10; // Light On
         usbMIDI.sendNoteOn(57+circle_Counter,75,5);
       }
 
       if (toggleOnOff == 2 && circle_Counter <= 8)
-
       {
 
-        m_AcBulb[circle_Counter] = 75;
+         m_AcBulb[circle_Counter] = 75; // Light Off
          usbMIDI.sendNoteOff(57 + circle_Counter,0,5);
 
         toggleOnOff = 0;
@@ -49,8 +47,6 @@ class KnightRider
 
       if (circle_Counter == 8)
       {
-       
-        
         circle_Counter = 0;
         toggleOnOff = 0;
       }

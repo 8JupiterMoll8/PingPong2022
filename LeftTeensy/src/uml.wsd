@@ -8,6 +8,9 @@ class Piezo {
     -resetSumHits()
 }
 
+class GameManager
+
+
 class Counter {
     +start : int
 

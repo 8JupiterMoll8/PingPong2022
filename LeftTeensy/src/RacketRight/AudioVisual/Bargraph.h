@@ -3,11 +3,11 @@
 
 #pragma once
 #include <FastLED.h>
-#include "RacketRight.hpp"
+#include "Racket.hpp"
 class Bargraph
 {
 private:
-  CRGB (&m_A_ledStrip)
+  CRGB(&m_A_ledStrip)
   [134];
   const float ledCount = 134.0;
   float m_speed = 0;
@@ -23,7 +23,7 @@ public:
   void loop()
   {
     // map the result to a range from 0 to the number of LEDs:
-    int ledLevel = map(m_speed, m_speed_min, m_speed_max , 0.0, ledCount);
+    int ledLevel = map(m_speed, m_speed_min, m_speed_max, 0.0, ledCount);
 
     // Serial.println(ledLevel);
     // delay(10);
@@ -37,14 +37,12 @@ public:
       {
         m_A_ledStrip[thisLed] += CRGB(255, 255, 255);
         usbMIDI.sendNoteOn(thisLed, 75, 3);
-     
-      for (int j = 0; j < ledLevel; j++)
-      {
-       
-          m_A_ledStrip[j] += m_A_ledStrip[j].fadeToBlackBy(180 - j );
-      }
 
+        for (int j = 0; j < ledLevel; j++)
+        {
 
+          m_A_ledStrip[j] += m_A_ledStrip[j].fadeToBlackBy(180 - j);
+        }
       }
       // turn off all pins higher than the ledLevel:
       else
@@ -55,11 +53,11 @@ public:
     }
   }
 
-  void setMapSpeed(float input, float min,float max )
+  void setMapSpeed(float input, float min, float max)
   {
-      m_speed     = input;
-      m_speed_min = min;
-      m_speed_max = max;
+    m_speed = input;
+    m_speed_min = min;
+    m_speed_max = max;
   }
 };
 

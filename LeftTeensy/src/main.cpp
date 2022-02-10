@@ -8,7 +8,7 @@
 #include "Reciver.hpp"
 #include "ReciverData.hpp"
 #include "PeaKDetector.hpp"
-//#include "Racket.hpp"
+
 #include "ResponsiveAnalogRead.h"
 #include "Counter.hpp"
 #include "I_InputSensorBhv.hpp"
@@ -24,7 +24,7 @@
 #include "Mahony.hpp"
 #include "Pressure.hpp"
 #include "Speed.hpp"
-#include "RacketRight.hpp"
+#include "Racket.hpp"
 #include "RacketLeft.h"
 #include "Table.h"
 #include "GameManager.h"
@@ -38,6 +38,7 @@
 
 
 
+
 /*
 ██╗     ██╗ ██████╗ ██╗  ██╗████████╗
 ██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
@@ -47,8 +48,6 @@
 ╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝
 
 */
-
-
 
 // How many leds in your strip?
 #define NUM_LEDS 134
@@ -135,7 +134,7 @@ Mahony rr_Mahony(rr_rf24SensorData, rr_fusion);
 Pressure rr_pressure(rr_rf24SensorData);
 
 // Left Racket
-RacketRight rightRacket(rr_Piezo, rr_speed, rr_Swing, rr_Mahony, rr_pressure);
+Racket rightRacket(rr_Piezo, rr_speed, rr_Swing, rr_Mahony, rr_pressure);
 
 // AudioVisual Behaviour for Swing without Ballcontact
 Bargraph bargraph(A_ledStrip);
@@ -203,6 +202,7 @@ PingPongManger pingpongManager(leftRacket,rightRacket,leftTable,rightTable);
  //MovePixel movePixel(A_ledStrip);
 
 
+
 /*
 ███████╗███████╗████████╗██╗   ██╗██████╗  ██╗██╗
 ██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗██╔╝╚██╗
@@ -254,14 +254,27 @@ leftRacket.loop();
 rightRacket.loop();
 leftTable.loop();
 rightTable.loop();
+
+
 // GameManger for Aufschlag and BallwechselCounter
 //gameManger.loop();
-pingpongManager.loop();
+//pingpongManager.loop();
 // Audiovisual Behavior for right Racket
 // Bargraph and Comet right now
 swingController.loop();
 FastLED.show();
 
+
+
+
+if(leftTable.isHit())
+{
+  usbMIDI.sendNoteOn(54,127,16);
+}else
+{
+  
+  usbMIDI.sendNoteOff(54,127,16);
+}
 
 //!This the Time Displayer his speed is dependet from 
 //! From the amount of ballwechsel
@@ -275,32 +288,10 @@ FastLED.show();
     static int increment = 0;
     increment = increment + 10;
     //Serial.println(increment);
-    knightRider.setSpeed(increment);
+    //knightRider.setSpeed(increment);
   }
 
-  // Physics Eigen
-  // moveNeopixel.loop();
-  // moveNeopixelA.loop();
 
-  // moveNeopixel.intervall = 50;
-  // moveNeopixel.blue = 0;
-  // moveNeopixel.red = 255;
-  // moveNeopixel.green = 100;
-
-  // moveNeopixelA.intervall = 250;
-  // moveNeopixelA.blue = 255;
-  // moveNeopixelA.red = 255;
-  // moveNeopixelA.green = 100;
-
-
-  
-
-
-
-
-  
- 
- 
 
 
 
@@ -309,17 +300,6 @@ FastLED.show();
 
 
 
-  // Representing Time Speed Light Bulb
- // knightRider.loop();
-  //knightRider.setSpeed(60);
-
-  // 
-  //bargraph.loop();
-
-
-
-  //TODO AudioVisual the energy of the Swing
-  //comet.loop();
 
   
 
