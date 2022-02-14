@@ -2,16 +2,20 @@
 #define PINGPONGMANGER_H
 #pragma once
 #include "GameManager.h"
+#include "Comet.h"
 
 class PingPongManger : public GameManager
 {
 public:
-    PingPongManger(RacketLeft &leftRacket, Racket &rightRacket, Table &leftTable, Table &rightTable) :
-    GameManager(leftRacket, rightRacket, leftTable, rightTable)
+    PingPongManger(RacketLeft &leftRacket, Racket &rightRacket, Table &leftTable, Table &rightTable, Comet &comet) :
+    GameManager(leftRacket, rightRacket, leftTable, rightTable),
+    m_comet(comet)
     {
     }
 
 private:
+
+Comet &m_comet;
 /*
  █████╗ ██╗   ██╗███████╗███████╗ ██████╗██╗  ██╗██╗      █████╗  ██████╗ 
 ██╔══██╗██║   ██║██╔════╝██╔════╝██╔════╝██║  ██║██║     ██╔══██╗██╔════╝ 
@@ -28,7 +32,7 @@ private:
 
     virtual void lt_hitAufschalg() override
     {
-        usbMIDI.sendNoteOn(random(32, 73), 127, 4);
+        usbMIDI.sendNoteOn(random(78, 73), 127, 4);
     };
 
     virtual void rr_hitAufschlag() override

@@ -83,7 +83,7 @@ RECEIVE_DATA_STRUCTURE lr_ET_SensorData;
 //Hit 
 const int LR_PIEZO_THERSHOLD_MIN{5};
 const int LR_PIEZO_PEAKTRACK_MILLIS{3};
-const int LR_PIEZO_AFTERSCHOCK_MILLIS{25};
+const int LR_PIEZO_AFTERSCHOCK_MILLIS{50};
 
 PeakDetector  lr_PiezoDetector(LR_PIEZO_THERSHOLD_MIN, LR_PIEZO_PEAKTRACK_MILLIS, LR_PIEZO_AFTERSCHOCK_MILLIS);
 Counter       lr_PiezoCounter;
@@ -153,9 +153,9 @@ SwingController swingController(comet,bargraph,rightRacket);
  */
 /*PIEZO*/
 const int LT_PIEZO_PIN{A16};
-const int LT_PIEZO_THERSHOLD_MIN{35};
-const int LT_PIEZO_PEAKTRACK_MILLIS{10};
-const int LT_PIEZO_AFTERSCHOCK_MILLIS{25};
+const int LT_PIEZO_THERSHOLD_MIN{50};
+const int LT_PIEZO_PEAKTRACK_MILLIS{5};
+const int LT_PIEZO_AFTERSCHOCK_MILLIS{500};
 
 PeakDetector         lt_PiezoDetector(LT_PIEZO_THERSHOLD_MIN, LT_PIEZO_PEAKTRACK_MILLIS, LT_PIEZO_AFTERSCHOCK_MILLIS);
 ResponsiveAnalogRead lt_PiezoSmoother(LT_PIEZO_PIN, false);
@@ -176,9 +176,9 @@ Table leftTable(lt_Piezo);
 
 /*PIEZO*/
 const int RT_PIEZO_PIN{A17};
-const int RT_PIEZO_THERSHOLD_MIN{100};
-const int RT_PIEZO_PEAKTRACK_MILLIS{10};
-const int RT_PIEZO_AFTERSCHOCK_MILLIS{25};
+const int RT_PIEZO_THERSHOLD_MIN{55};
+const int RT_PIEZO_PEAKTRACK_MILLIS{5};
+const int RT_PIEZO_AFTERSCHOCK_MILLIS{500};
 
 PeakDetector rt_PiezoDetector(RT_PIEZO_THERSHOLD_MIN, RT_PIEZO_PEAKTRACK_MILLIS, RT_PIEZO_AFTERSCHOCK_MILLIS);
 ResponsiveAnalogRead rt_PiezoSmoother(RT_PIEZO_PIN, false);
@@ -198,7 +198,7 @@ Table rightTable(rt_Piezo);
                                                                                                       
 */
 //GameManager gameManger(leftRacket,rightRacket,leftTable,rightTable);
-PingPongManger pingpongManager(leftRacket,rightRacket,leftTable,rightTable);
+  PingPongManger pingpongManager(leftRacket,rightRacket,leftTable,rightTable,comet);
  //MovePixel movePixel(A_ledStrip);
 
 
@@ -227,7 +227,7 @@ void setup()
   LEDS.setBrightness(255);
 
   // Init EasyTransfer
-  Serial8.begin(9600);
+  Serial8.begin(115200);
   ET.begin(details(lr_ET_SensorData), &Serial8);
 
   // Init RF24 Reciver Right Racket
@@ -258,7 +258,7 @@ rightTable.loop();
 
 // GameManger for Aufschlag and BallwechselCounter
 //gameManger.loop();
-//pingpongManager.loop();
+pingpongManager.loop();
 // Audiovisual Behavior for right Racket
 // Bargraph and Comet right now
 swingController.loop();
@@ -266,31 +266,34 @@ FastLED.show();
 
 
 
+//int note = map(lr_ET_SensorData.fsr,50,1024,0,127);
+//usbMIDI.sendNoteOn(note,127,16);
 
 if(leftTable.isHit())
 {
+  for (int i = 0; i < 8; i++)
+  {
+   CH[i]= 10;
+  }
+  
+   
   usbMIDI.sendNoteOn(54,127,16);
-}else
-{
+
+ }else
+ {
   
   usbMIDI.sendNoteOff(54,127,16);
-}
+  CH[i]= 75;
+  }
 
 //!This the Time Displayer his speed is dependet from 
 //! From the amount of ballwechsel
 // Light Bulb Speed Slow
   static elapsedMillis ms_speed;
-  //knightRider.loop();
-  if (ms_speed > 1000)
-  {
-    ms_speed = 0;
-    
-    static int increment = 0;
-    increment = increment + 10;
-    //Serial.println(increment);
-    //knightRider.setSpeed(increment);
-  }
+   knightRider.loop();
+   knightRider.setSpeed(50);
 
+  
 
 
 

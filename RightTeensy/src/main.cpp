@@ -6,7 +6,6 @@
 #include "printf.h"
 #include "RF24.h"
 #include "PeaKDetector.hpp"
-//#include "Racket.hpp"
 #include "Counter.hpp"
 #include "I_InputSensorBhv.hpp"
 #include "InputSensorRaw.hpp"
@@ -19,16 +18,14 @@
 #include "Mahony.hpp"
 #include "Pressure.hpp"
 #include "Speed.hpp"
-#include "Racket.hpp" 
 #include "Reciver.hpp"
 #include "ReciverData.hpp"
-//#include "Racket.hpp"
 #include "ResponsiveAnalogRead.h"
-#include <EasyTransfer.h>
 #include "KnightRider.h"
 #include "Comet.h"
 #include "Bargraph.h"
 #include "SwingController.h"
+#include "Racket.hpp" 
 
 
 
@@ -43,10 +40,10 @@
 */
 
 // How many leds in your strip?
-#define NUM_LEDS 134
+#define NUM_LEDS  134
 #define NUM_LEDS_2 75
-#define DATA_PIN 17
-#define DATA_PIN_2 1
+#define DATA_PIN    1
+#define DATA_PIN_2 17
 
 CRGB A_ledStrip[NUM_LEDS];
 CRGB B_ledStrip[NUM_LEDS_2];
@@ -56,18 +53,9 @@ CRGB B_ledStrip[NUM_LEDS_2];
 //Neopixel Ledstrio Animation for Swing
 
 // LightBulb for Animation for Time
-KnightRider knightRider(CH);
+//KnightRider knightRider(CH);
 
 
-
-/*
-███████╗████████╗
-██╔════╝╚══██╔══╝
-█████╗     ██║   
-██╔══╝     ██║   
-███████╗   ██║   
-╚══════╝   ╚═╝   
- */
 
 
 
@@ -87,6 +75,15 @@ struct SEND_DATA_STRUCTURE
   //put your variable definitions here for the data you want to send
   //THIS MUST BE EXACTLY THE SAME ON THE OTHER ARDUINO
   int16_t pz;
+  //float speed;
+  // int32_t gx;
+  // int32_t gz;
+  // int32_t gy;
+  // int32_t ax;
+  // int32_t ay;
+  // int32_t az;
+    
+
 };
 SEND_DATA_STRUCTURE mydata;
 void blink();
@@ -106,7 +103,7 @@ Reciver lr_reciver(radio, ADRESS, CHANNEL, lr_rf24SensorData);
 // HIT Behaviour
 const int RR_PIEZO_THERSHOLD_MIN{5};
 const int RR_PIEZO_PEAKTRACK_MILLIS{3};
-const int RR_PIEZO_AFTERSCHOCK_MILLIS{25};
+const int RR_PIEZO_AFTERSCHOCK_MILLIS{50};
 
 PeakDetector   lr_PiezoDetector(RR_PIEZO_THERSHOLD_MIN, RR_PIEZO_PEAKTRACK_MILLIS, RR_PIEZO_AFTERSCHOCK_MILLIS);
 Counter        lr_PiezoCounter;
@@ -123,13 +120,13 @@ Mahony lr_Mahony(lr_rf24SensorData, lr_fusion);
 Pressure lr_pressure(lr_rf24SensorData);
 
 // Left Racket
-Racket rightRacket(lr_Piezo, lr_speed, lr_Swing, lr_Mahony, lr_pressure);
+Racket leftRacket(lr_Piezo, lr_speed, lr_Swing, lr_Mahony, lr_pressure);
 
 // AudioVisual Behaviour for Swing without Ballcontact
 Bargraph bargraph(A_ledStrip);
 // AudioVisual Behaviour for Swing after Ballcontact
 Comet comet(A_ledStrip);
-SwingController swingController(comet,bargraph,rightRacket);
+SwingController swingController(comet,bargraph,leftRacket);
 
 void setup()
 {
@@ -139,23 +136,61 @@ void setup()
   // {
   // }
 
-  Serial8.begin(9600); // Open Serial8 for EaesyTransfer
+ // Init Light Bulb
+  //setup_Dimmer();
 
+  // Init WS2182B
+  LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>(A_ledStrip, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  //LEDS.addLeds<WS2812SERIAL, DATA_PIN_2, RGB>(B_ledStrip, 74);
+  LEDS.setBrightness(255);
+
+ // Init EasyTransfer
+  Serial8.begin(115200); // Open Serial8 for EaesyTransfer
   ET.begin(details(mydata), &Serial8);
+
+  // Init RF24 Reciver Lrft Racket
   lr_reciver.setup();
+
+  // Blink Led Pin OutPut
   pinMode(24,OUTPUT);
 
 }
 
 void loop()
 {
+  // Teensy is On beacuse he is blinking
+  blink();
+  
+  leftRacket.loop();
+  // ET
+  if(leftRacket.isHit())
+  {
+
+  //Serial.println("Hit");
+  //mydata.pz  = lr_rf24SensorData.pz;
+  //mydata.speed  = leftRacket.speed();
+  // mydata.fsr = lr_rf24SensorData.fsr;
+  // mydata.gx  = lr_rf24SensorData.gx;
+  // mydata.gz  = lr_rf24SensorData.gz;
+  // mydata.gy  = lr_rf24SensorData.gy;
+  // mydata.ax  = lr_rf24SensorData.ax;
+  // mydata.ay  = lr_rf24SensorData.ay;
+  // mydata.az  = lr_rf24SensorData.az;
+  
+  }
+
+  mydata.pz  = lr_rf24SensorData.pz;
  
-    blink();
-    lr_reciver.loop();
-    //ET
-    mydata.pz = lr_rf24SensorData.pz;
-    ET.sendData();
-   
+  ET.sendData();
+
+  // Loop RF24
+  lr_reciver.loop();
+
+  // Racket Audio Visual Behavuiut
+  //leftRacket.loop();
+  swingController.loop();
+
+  FastLED.show();
 }
 
 void blink()

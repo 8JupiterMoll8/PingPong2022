@@ -73,7 +73,7 @@ public:
     if (ms > 20)
     {
       ms = 0;
-
+      m_speed = m_speed +  m_acceleration;
       m_iPos += m_iDirection * m_speed;
 
       // Move a 5 LedGroup Forward
@@ -99,12 +99,13 @@ private:
   CRGB (&A_leds)[134];
   const int NUM_LEDS = 134;
 
-  byte    m_fadeAmt = 34;
-  int     m_size = 2;
-  float   m_speed = 7.0;
-  float   m_iPos = 0.0;
-  float   m_iDirection = 1.0;
-  byte    m_midiVelocity = 75;
+  byte    m_fadeAmt             = 134;
+  int     m_size                = 2;
+  float   m_speed               = 7.0;
+  float   m_acceleration        = 0.01;
+  float   m_iPos                = 0.0;
+  float   m_iDirection          = 1.0;
+  byte    m_midiVelocity        = 75;
   boolean m_animationCometStart = false;
 
   elapsedMillis ms;

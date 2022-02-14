@@ -122,11 +122,7 @@ public:
                 lr_hitAufschlag();
                 resetAllCounters();
                 state = lt_AS;
-
                 // printGameStatus();
-              
-               
-              
             }
             break;
 

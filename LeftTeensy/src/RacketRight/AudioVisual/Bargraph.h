@@ -35,20 +35,20 @@ public:
       // turn the pin for this element on:
       if (thisLed < ledLevel)
       {
-        m_A_ledStrip[thisLed] += CRGB(255, 255, 255);
+        //m_A_ledStrip[thisLed] += CRGB(255, 255, 255);
         usbMIDI.sendNoteOn(thisLed, 75, 3);
 
         for (int j = 0; j < ledLevel; j++)
         {
 
-          m_A_ledStrip[j] += m_A_ledStrip[j].fadeToBlackBy(180 - j);
+         // m_A_ledStrip[j] += m_A_ledStrip[j].fadeToBlackBy(180 - j);
         }
       }
       // turn off all pins higher than the ledLevel:
       else
       {
         usbMIDI.sendNoteOff(thisLed, 0, 3);
-        m_A_ledStrip[thisLed] = m_A_ledStrip[thisLed].fadeToBlackBy(34);
+       // m_A_ledStrip[thisLed] = m_A_ledStrip[thisLed].fadeToBlackBy(34);
       }
     }
   }

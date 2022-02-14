@@ -66,8 +66,8 @@ public:
 			}
 			if (m_msec >= m_peakTrackMillis)
 			{
-				Serial.print("peak = ");
-				Serial.println(m_peak);
+				//Serial.print("peak = ");
+				//Serial.println(m_peak);
 			
 				*ptr = true;
 				
