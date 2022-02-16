@@ -8,7 +8,7 @@ class Comet
 {
 
 public:
-  Comet(CRGB (&ledStrip)[134]): A_leds(ledStrip){} 
+  Comet(CRGB (&ledStrip)[288]): A_leds(ledStrip){} 
 
   void loop()
   {
@@ -70,7 +70,7 @@ public:
 
   void animationComet()
   {
-    if (ms > 20)
+    if (ms > 10)
     {
       ms = 0;
       m_speed = m_speed +  m_acceleration;
@@ -96,10 +96,10 @@ public:
     }
   }
 private:
-  CRGB (&A_leds)[134];
-  const int NUM_LEDS = 134;
+  CRGB (&A_leds)[288];
+  const int NUM_LEDS = 288;
 
-  byte    m_fadeAmt             = 134;
+  byte    m_fadeAmt             = 288;
   int     m_size                = 2;
   float   m_speed               = 7.0;
   float   m_acceleration        = 0.01;

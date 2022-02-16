@@ -50,8 +50,8 @@ void loop()
 {
 
 
-  //Xaxis.runToNewPosition(0);
-  //Xaxis.runToNewPosition(500);
+ // stundenZeiger.runToNewPosition(0);
+ // stundenZeiger.runToNewPosition(500);
 
   //Yaxis.runToNewPosition(0);
   //Yaxis.runToNewPosition(500);
@@ -62,28 +62,43 @@ void loop()
 
 
   //increaseStepperSpeed();
-  randomStepperSpeed();
-
-
+  tickTack();
+//
+//
   stundenZeiger.setSpeed(incrementSpeed);
   minutenZeiger.setSpeed(incrementSpeed);
-  sekundenZeiger.setSpeed(5000);
+  sekundenZeiger.setSpeed(incrementSpeed);
 
   stundenZeiger.runSpeed();
   minutenZeiger.runSpeed();
-  sekundenZeiger.runSpeed();
+  sekundenZeiger.runSpeed();           
 
 
 }
 
-int randomStepperSpeed()
+int tickTack()
 {
-  if (ms > 1000)
+  static boolean toogle = false;
+  static int speed = 1000;
+  if (ms > speed)
   {
     ms = 0;
+   toogle = !toogle;
 
-    incrementSpeed = ar_Speed[random(0, 2)];
-   // Xaxis.setCurrentPosition(0);
+  if(toogle == true)
+  {
+    incrementSpeed = 7000;
+    speed = 150;
+  }
+  else
+  {
+   
+    incrementSpeed = 0;
+    speed = 50;
+  }
+
+ 
+ 
 
 
 

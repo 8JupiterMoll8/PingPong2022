@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <WS2812Serial.h>
-#define USE_WS2812SERIAL
+// #include <WS2812Serial.h>
+// #define USE_WS2812SERIAL
 #include <FastLED.h>
 #include <SPI.h>
 #include "printf.h"
@@ -35,7 +35,6 @@
 #include "SwingController.h"
 #include "PingPongManger.h"
 #include "Clock.h"
-
 
 
 
@@ -198,25 +197,22 @@ Table rightTable(rt_Piezo);
  ╚═════╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝
                                          
 */
-  const byte X_STEPPER_STEP_PIN {41};
-  const byte X_STEPPER_DIR_PIN  {40};
+  // const byte X_STEPPER_STEP_PIN {41};
+  // const byte X_STEPPER_DIR_PIN  {40};
 
-  const byte Y_STEPPER_STEP_PIN {39};
-  const byte Y_STEPPER_DIR_PIN  {38};
+  // const byte Y_STEPPER_STEP_PIN {39};
+  // const byte Y_STEPPER_DIR_PIN  {38};
 
-  const byte A_STEPPER_STEP_PIN {37};
-  const byte A_STEPPER_DIR_PIN  {36};
+  // const byte A_STEPPER_STEP_PIN {37};
+  // const byte A_STEPPER_DIR_PIN  {36};
 
   //AccelStepper stundenZeiger (1, X_STEPPER_STEP_PIN, X_STEPPER_DIR_PIN);
   //AccelStepper minutenZeiger (1, Y_STEPPER_STEP_PIN, Y_STEPPER_DIR_PIN);
   //AccelStepper sekundenZeiger(1, A_STEPPER_STEP_PIN, A_STEPPER_DIR_PIN);
   
   //Clock clock(stundenZeiger,minutenZeiger,sekundenZeiger);
+    Clock clock;
 
-#include "Stepper.h"
-const int stepsPerRevolution = 200;  
-Stepper myStepper(stepsPerRevolution, X_STEPPER_STEP_PIN, X_STEPPER_DIR_PIN);
-int stepCount = 0;  // number of steps the motor has taken
 
 /*
  ██████╗  █████╗ ███╗   ███╗███████╗    ███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗██████╗ 
@@ -252,8 +248,9 @@ void setup()
  // setup_Dimmer();
 
   // Init WS2182B
-  LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>  (A_ledStrip, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  LEDS.addLeds<WS2812SERIAL, DATA_PIN_2, RGB>(B_ledStrip, 74);
+  LEDS.addLeds<SK9822, 26, 27, RGB>(A_ledStrip, NUM_LEDS);  // BGR ordering is typical
+  //LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>  (A_ledStrip, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  //LEDS.addLeds<WS2812SERIAL, DATA_PIN_2, RGB>(B_ledStrip, 74);
   LEDS.setBrightness(255);
 
   // Init EasyTransfer
@@ -264,7 +261,7 @@ void setup()
   rr_RF24_Reciver.setup();
 
   // Init Clock
-  //clock.setup();
+   clock.setup();
 }
 
 /*
@@ -293,7 +290,7 @@ rightTable.loop();
 
 // GameManger for Aufschlag and BallwechselCounter
 //gameManger.loop();
-pingpongManager.loop();
+//pingpongManager.loop();
 
 // Audiovisual Behavior for right Racket
 // Bargraph and Comet right now
@@ -301,11 +298,20 @@ swingController.loop();
 FastLED.show();
 
 
-// Clock
-//clock.loop();
 
- myStepper.setSpeed(1000);
- myStepper.step(stepsPerRevolution / 100);
+clock.loop();
+// if(leftRacket.isHit())
+// {
+//    Serial.println("Hit");
+//    usbMIDI.sendNoteOn(74,127,11);
+// }
+// else
+// {
+//    usbMIDI.sendNoteOff(74,127,11);
+// }
+
+
+
 
 
 
@@ -324,12 +330,6 @@ FastLED.show();
 
 
 
-  
-
-
-
-
-  
 
 } // End Loop
 

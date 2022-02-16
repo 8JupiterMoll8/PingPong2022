@@ -79,7 +79,7 @@ Comet &m_comet;
 
     virtual int  getTotalBallwechsel() 
     {
-
+         return 0;
     }
 /*
 ███████╗██████╗ ██████╗  ██████╗ ██████╗ 
