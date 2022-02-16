@@ -34,6 +34,7 @@
 #include "Bargraph.h"
 #include "SwingController.h"
 #include "PingPongManger.h"
+#include "Clock.h"
 
 
 
@@ -76,7 +77,7 @@ KnightRider knightRider(CH);
 ╚══════╝╚══════╝╚═╝        ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
 */
 // Reciver EasyTransfer
-EasyTransfer ET;
+EasyTransfer lr_ET;
 // give a name to the group of data
 RECEIVE_DATA_STRUCTURE lr_ET_SensorData;
 
@@ -112,7 +113,7 @@ const byte CSN_PIN    {20};
 
 RF24 radio(CE_PIN, CSN_PIN);
 ReciverData rr_rf24SensorData;
-Reciver rr_reciver(radio, ADRESS, CHANNEL, rr_rf24SensorData);
+Reciver rr_RF24_Reciver(radio, ADRESS, CHANNEL, rr_rf24SensorData);
 
 // HIT Behaviour
 const int RR_PIEZO_THERSHOLD_MIN{5};
@@ -152,10 +153,10 @@ SwingController swingController(comet,bargraph,rightRacket);
 ╚══════╝╚══════╝╚═╝        ╚═╝          ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
  */
 /*PIEZO*/
-const int LT_PIEZO_PIN{A16};
-const int LT_PIEZO_THERSHOLD_MIN{50};
-const int LT_PIEZO_PEAKTRACK_MILLIS{5};
-const int LT_PIEZO_AFTERSCHOCK_MILLIS{500};
+const int LT_PIEZO_PIN                  {A8};
+const int LT_PIEZO_THERSHOLD_MIN        {50};
+const int LT_PIEZO_PEAKTRACK_MILLIS      {5};
+const int LT_PIEZO_AFTERSCHOCK_MILLIS {500};
 
 PeakDetector         lt_PiezoDetector(LT_PIEZO_THERSHOLD_MIN, LT_PIEZO_PEAKTRACK_MILLIS, LT_PIEZO_AFTERSCHOCK_MILLIS);
 ResponsiveAnalogRead lt_PiezoSmoother(LT_PIEZO_PIN, false);
@@ -175,10 +176,10 @@ Table leftTable(lt_Piezo);
  */
 
 /*PIEZO*/
-const int RT_PIEZO_PIN{A17};
-const int RT_PIEZO_THERSHOLD_MIN{55};
-const int RT_PIEZO_PEAKTRACK_MILLIS{5};
-const int RT_PIEZO_AFTERSCHOCK_MILLIS{500};
+const int RT_PIEZO_PIN                 {A9};
+const int RT_PIEZO_THERSHOLD_MIN       {55};
+const int RT_PIEZO_PEAKTRACK_MILLIS     {5};
+const int RT_PIEZO_AFTERSCHOCK_MILLIS {500};
 
 PeakDetector rt_PiezoDetector(RT_PIEZO_THERSHOLD_MIN, RT_PIEZO_PEAKTRACK_MILLIS, RT_PIEZO_AFTERSCHOCK_MILLIS);
 ResponsiveAnalogRead rt_PiezoSmoother(RT_PIEZO_PIN, false);
@@ -187,6 +188,35 @@ Counter rt_PiezoCounter;
 Piezo rt_Piezo(rt_PiezoDetector, rt_PiezoCounter, rt_PiezoInput); // Composition
 
 Table rightTable(rt_Piezo);
+
+/*
+ ██████╗██╗      ██████╗  ██████╗██╗  ██╗
+██╔════╝██║     ██╔═══██╗██╔════╝██║ ██╔╝
+██║     ██║     ██║   ██║██║     █████╔╝ 
+██║     ██║     ██║   ██║██║     ██╔═██╗ 
+╚██████╗███████╗╚██████╔╝╚██████╗██║  ██╗
+ ╚═════╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝
+                                         
+*/
+  const byte X_STEPPER_STEP_PIN {41};
+  const byte X_STEPPER_DIR_PIN  {40};
+
+  const byte Y_STEPPER_STEP_PIN {39};
+  const byte Y_STEPPER_DIR_PIN  {38};
+
+  const byte A_STEPPER_STEP_PIN {37};
+  const byte A_STEPPER_DIR_PIN  {36};
+
+  //AccelStepper stundenZeiger (1, X_STEPPER_STEP_PIN, X_STEPPER_DIR_PIN);
+  //AccelStepper minutenZeiger (1, Y_STEPPER_STEP_PIN, Y_STEPPER_DIR_PIN);
+  //AccelStepper sekundenZeiger(1, A_STEPPER_STEP_PIN, A_STEPPER_DIR_PIN);
+  
+  //Clock clock(stundenZeiger,minutenZeiger,sekundenZeiger);
+
+#include "Stepper.h"
+const int stepsPerRevolution = 200;  
+Stepper myStepper(stepsPerRevolution, X_STEPPER_STEP_PIN, X_STEPPER_DIR_PIN);
+int stepCount = 0;  // number of steps the motor has taken
 
 /*
  ██████╗  █████╗ ███╗   ███╗███████╗    ███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗██████╗ 
@@ -219,19 +249,22 @@ void setup()
   {
   }
   // Init Light Bulb
-  setup_Dimmer();
+ // setup_Dimmer();
 
   // Init WS2182B
-  LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>(A_ledStrip, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>  (A_ledStrip, NUM_LEDS).setCorrection(TypicalLEDStrip);
   LEDS.addLeds<WS2812SERIAL, DATA_PIN_2, RGB>(B_ledStrip, 74);
   LEDS.setBrightness(255);
 
   // Init EasyTransfer
   Serial8.begin(115200);
-  ET.begin(details(lr_ET_SensorData), &Serial8);
+  lr_ET.begin(details(lr_ET_SensorData), &Serial8);
 
   // Init RF24 Reciver Right Racket
-  rr_reciver.setup();
+  rr_RF24_Reciver.setup();
+
+  // Init Clock
+  //clock.setup();
 }
 
 /*
@@ -245,9 +278,11 @@ void setup()
 void loop()
 {
 // Loop EasyTransfer
-  ET.receiveData();
+   lr_ET.receiveData();
+
 // Loop RF24
-  rr_reciver.loop();
+   rr_RF24_Reciver.loop();
+
 //! Loop only one loop for each obeject
 // Physical GameObjects
 leftRacket.loop();
@@ -259,39 +294,29 @@ rightTable.loop();
 // GameManger for Aufschlag and BallwechselCounter
 //gameManger.loop();
 pingpongManager.loop();
+
 // Audiovisual Behavior for right Racket
 // Bargraph and Comet right now
 swingController.loop();
 FastLED.show();
 
 
+// Clock
+//clock.loop();
 
-//int note = map(lr_ET_SensorData.fsr,50,1024,0,127);
-//usbMIDI.sendNoteOn(note,127,16);
+ myStepper.setSpeed(1000);
+ myStepper.step(stepsPerRevolution / 100);
 
-if(leftTable.isHit())
-{
-  for (int i = 0; i < 8; i++)
-  {
-   CH[i]= 10;
-  }
-  
-   
-  usbMIDI.sendNoteOn(54,127,16);
 
- }else
- {
-  
-  usbMIDI.sendNoteOff(54,127,16);
-  CH[i]= 75;
-  }
+
+
 
 //!This the Time Displayer his speed is dependet from 
 //! From the amount of ballwechsel
 // Light Bulb Speed Slow
-  static elapsedMillis ms_speed;
-   knightRider.loop();
-   knightRider.setSpeed(50);
+
+   //knightRider.loop();
+  // knightRider.setSpeed(50);
 
   
 

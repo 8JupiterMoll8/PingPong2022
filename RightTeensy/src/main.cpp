@@ -53,7 +53,7 @@ CRGB B_ledStrip[NUM_LEDS_2];
 //Neopixel Ledstrio Animation for Swing
 
 // LightBulb for Animation for Time
-//KnightRider knightRider(CH);
+KnightRider knightRider(CH);
 
 
 
@@ -180,7 +180,6 @@ void loop()
   }
 
   mydata.pz  = lr_rf24SensorData.pz;
- 
   ET.sendData();
 
   // Loop RF24
@@ -189,8 +188,10 @@ void loop()
   // Racket Audio Visual Behavuiut
   //leftRacket.loop();
   swingController.loop();
-
   FastLED.show();
+
+  // KnightRider
+  knightRider.loop();
 }
 
 void blink()
