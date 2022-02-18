@@ -94,7 +94,7 @@ void blink();
 const uint64_t ADRESS {0xF0F0F0F0D2LL};
 const byte CHANNEL    {121};
 const byte CE_PIN     {21};
-const byte CSN_PIN    {20};
+const byte CSN_PIN    {20};        
 
 RF24 radio(CE_PIN, CSN_PIN);
 ReciverData lr_rf24SensorData;
@@ -128,6 +128,7 @@ Bargraph bargraph(A_ledStrip);
 Comet comet(A_ledStrip);
 SwingController swingController(comet,bargraph,leftRacket);
 
+
 void setup()
 {
   Serial.begin(9600);
@@ -137,7 +138,7 @@ void setup()
   // }
 
  // Init Light Bulb
-  //setup_Dimmer();
+  setup_Dimmer();
 
   // Init WS2182B
   LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>(A_ledStrip, NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -147,6 +148,8 @@ void setup()
  // Init EasyTransfer
   Serial8.begin(115200); // Open Serial8 for EaesyTransfer
   ET.begin(details(mydata), &Serial8);
+
+
 
   // Init RF24 Reciver Lrft Racket
   lr_reciver.setup();
@@ -162,25 +165,11 @@ void loop()
   blink();
   
   leftRacket.loop();
-  // ET
-  if(leftRacket.isHit())
-  {
-
-  //Serial.println("Hit");
-  //mydata.pz  = lr_rf24SensorData.pz;
-  //mydata.speed  = leftRacket.speed();
-  // mydata.fsr = lr_rf24SensorData.fsr;
-  // mydata.gx  = lr_rf24SensorData.gx;
-  // mydata.gz  = lr_rf24SensorData.gz;
-  // mydata.gy  = lr_rf24SensorData.gy;
-  // mydata.ax  = lr_rf24SensorData.ax;
-  // mydata.ay  = lr_rf24SensorData.ay;
-  // mydata.az  = lr_rf24SensorData.az;
-  
-  }
-
+  // ET Serial8
   mydata.pz  = lr_rf24SensorData.pz;
   ET.sendData();
+
+
 
   // Loop RF24
   lr_reciver.loop();

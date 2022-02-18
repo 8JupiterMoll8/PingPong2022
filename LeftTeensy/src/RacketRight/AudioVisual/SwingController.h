@@ -18,7 +18,7 @@ public:
     void loop()
     {
         //m_rightRacket.loop();
-        //m_bargraph.loop();
+       // m_bargraph.loop();
         m_comet.loop();// empty
    
 
@@ -29,10 +29,11 @@ public:
         // Comet
         if(m_leftRacket.isHit())
         {
+            Serial.println(speed);
         m_comet.start();
         //m_comet.reverseDirection();
-        m_comet.setSpeed       (map( speed, 0.0, 25.0, 0.0, 5.0   ));
-        m_comet.setSize        (map( speed, 0.0, 25.0, 0.0, 10.0   ));
+        m_comet.setSpeed       (map( speed, 0.0, 25.5, 0.0, 10.0   ));
+        m_comet.setSize        (map( speed, 0.0, 25.0, 1.0,  25.0   ));
         m_comet.setFadeSize    (map( speed, 0.0, 25.0, 223.0, 134.0));
         m_comet.setMidiVelocity(map( speed, 0.0, 25.0, 0.0, 127.0    ));
         }

@@ -7,6 +7,14 @@
 		{
 			"name": "RightTeensy",
 			"path": "RightTeensy"
+		},
+		{
+			"name": "Ic2_SEND",
+			"path": "Ic2_SEND"
+		},
+		{
+			"name": "Ic2_recive",
+			"path": "Ic2_recive"
 		}
 	],
 	"settings": {

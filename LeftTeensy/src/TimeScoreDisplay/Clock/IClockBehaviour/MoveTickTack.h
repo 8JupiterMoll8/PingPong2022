@@ -15,7 +15,7 @@ public:
 
   virtual void loop()override
   {
-    tickTack();
+   
 
     m_stundenZeiger.setSpeed(incrementSpeed);
     m_minutenZeiger.setSpeed(incrementSpeed);
@@ -25,16 +25,17 @@ public:
     m_minutenZeiger.runSpeed();
     m_sekundenZeiger.runSpeed();
 
-    static float in = 4.712;
-    float out;
+   
 
     // do input, etc. here - as long as you don't pause, the LED will keep pulsing
 
     in = m_stundenZeiger.currentPosition()*0.01;
    
-    out = sin(in) * 35.5 + 35.5;
-    usbMIDI.sendNoteOn(map(out,0.0,127.0,30.0,75.0),127,11);
+    out = sin(in) * 61.5 + 61.5;
+    usbMIDI.sendNoteOn(map(out,0.0,127.0,30.0,70.0),map(out,0.0,127.0,0.0,70.0),11);
     //Serial.println(out);
+
+     tickTack();
    
   }
 
@@ -45,10 +46,13 @@ public:
 private:
     int speed = 1000;
     int incrementSpeed = 0;
+    float in = 4.712;
+    float out;
 
     void tickTack()
     {
         static boolean toogle = false;
+        
 
         if (ms > speed)
         {
@@ -57,14 +61,18 @@ private:
 
             if (toogle == true)
             {
-                incrementSpeed = 1000;
-                speed = 500;
+                incrementSpeed = 12000;
+                speed = 100;
+                   usbMIDI.sendNoteOff(120,127,11);
+                
                 
             }
             else
             {
                 incrementSpeed = 0;
                 speed = 500;
+                usbMIDI.sendNoteOn(120,127,11);
+                 
                 
             }
         }

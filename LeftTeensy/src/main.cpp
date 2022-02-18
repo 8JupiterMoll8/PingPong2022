@@ -50,13 +50,10 @@
 */
 
 // How many leds in your strip?
-#define NUM_LEDS 134
-#define NUM_LEDS_2 75
-#define DATA_PIN 17
-#define DATA_PIN_2 1
+const int NUM_LEDS  = 288;
 
 CRGB A_ledStrip[NUM_LEDS];
-CRGB B_ledStrip[NUM_LEDS_2];
+
 //MoveNeopixel moveNeopixel(A_ledStrip);
 //MoveNeopixel moveNeopixelA(A_ledStrip);
 
@@ -229,6 +226,10 @@ Table rightTable(rt_Piezo);
 
 
 
+
+
+
+
 /*
 ███████╗███████╗████████╗██╗   ██╗██████╗  ██╗██╗
 ██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗██╔╝╚██╗
@@ -245,10 +246,10 @@ void setup()
   {
   }
   // Init Light Bulb
- // setup_Dimmer();
+     setup_Dimmer();
 
   // Init WS2182B
-  LEDS.addLeds<SK9822, 26, 27, RGB>(A_ledStrip, NUM_LEDS);  // BGR ordering is typical
+  LEDS.addLeds<SK9822, 26, 27, RGB, DATA_RATE_MHZ(12) >(A_ledStrip, NUM_LEDS);  // BGR ordering is typical
   //LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>  (A_ledStrip, NUM_LEDS).setCorrection(TypicalLEDStrip);
   //LEDS.addLeds<WS2812SERIAL, DATA_PIN_2, RGB>(B_ledStrip, 74);
   LEDS.setBrightness(255);
@@ -256,6 +257,8 @@ void setup()
   // Init EasyTransfer
   Serial8.begin(115200);
   lr_ET.begin(details(lr_ET_SensorData), &Serial8);
+
+ 
 
   // Init RF24 Reciver Right Racket
   rr_RF24_Reciver.setup();
@@ -294,21 +297,36 @@ rightTable.loop();
 
 // Audiovisual Behavior for right Racket
 // Bargraph and Comet right now
-swingController.loop();
+//swingController.loop();
 FastLED.show();
 
 
 
-clock.loop();
-// if(leftRacket.isHit())
-// {
-//    Serial.println("Hit");
-//    usbMIDI.sendNoteOn(74,127,11);
-// }
-// else
-// {
-//    usbMIDI.sendNoteOff(74,127,11);
-// }
+//clock.loop();
+
+
+if(rightRacket.isHit())
+{
+   
+   usbMIDI.sendNoteOn(54,127,11);
+   
+        
+
+        for (int j = 0; j < 200; j++)
+        {
+
+         A_ledStrip[j] = CRGB(255, 255, 255);
+        }
+}
+else
+{
+      for (int j = 0; j < 200; j++)
+        {
+
+         A_ledStrip[j].nscale8(0);
+        }
+   usbMIDI.sendNoteOff(54,127,11);
+}
 
 
 
@@ -322,7 +340,10 @@ clock.loop();
 // Light Bulb Speed Slow
 
    //knightRider.loop();
-  // knightRider.setSpeed(50);
+   //knightRider.setSpeed(50);
+
+
+
 
   
 
@@ -333,3 +354,5 @@ clock.loop();
 
 } // End Loop
 
+
+void receive(int numBytes) {}          

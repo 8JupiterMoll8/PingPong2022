@@ -30,7 +30,7 @@ public:
     void loop()
     {
 
-        setMoveBehaviour(moveTickTack);
+        setMoveBehaviour(moveConstant);
         executeMoveBehaviour();
     }
 

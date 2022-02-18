@@ -7,15 +7,14 @@
 class Bargraph
 {
 private:
-  CRGB(&m_A_ledStrip)
-  [134];
-  const float ledCount = 134.0;
+  CRGB(&m_A_ledStrip)[288];
+  const float ledCount = 288.0;
   float m_speed = 0;
   float m_speed_max = 0.0;
   float m_speed_min = 30.0;
 
 public:
-  Bargraph(CRGB (&ledStrip)[134]) : m_A_ledStrip(ledStrip)
+  Bargraph(CRGB (&ledStrip)[288]) : m_A_ledStrip(ledStrip)
   {
   }
 
@@ -35,20 +34,20 @@ public:
       // turn the pin for this element on:
       if (thisLed < ledLevel)
       {
-        //m_A_ledStrip[thisLed] += CRGB(255, 255, 255);
+        m_A_ledStrip[thisLed] += CRGB(255, 255, 255);
         usbMIDI.sendNoteOn(thisLed, 75, 3);
 
         for (int j = 0; j < ledLevel; j++)
         {
 
-         // m_A_ledStrip[j] += m_A_ledStrip[j].fadeToBlackBy(180 - j);
+         m_A_ledStrip[j] += m_A_ledStrip[j].fadeToBlackBy(180 - j);
         }
       }
       // turn off all pins higher than the ledLevel:
       else
       {
         usbMIDI.sendNoteOff(thisLed, 0, 3);
-       // m_A_ledStrip[thisLed] = m_A_ledStrip[thisLed].fadeToBlackBy(34);
+        m_A_ledStrip[thisLed] = m_A_ledStrip[thisLed].fadeToBlackBy(34);
       }
     }
   }

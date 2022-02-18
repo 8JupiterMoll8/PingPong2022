@@ -3,7 +3,7 @@
 
 #include <FastLED.h>
 #pragma once
-
+extern const int NUM_LEDS;
 class Comet
 {
 
@@ -23,6 +23,7 @@ public:
     case START:
       //Do:
       animationComet();
+       m_animationCometStart = false;
       //Leave State
       if(animationCometIsEnd())
       {
@@ -43,7 +44,7 @@ public:
     }
   }
   // Behaviours
-  void start()                   { m_animationCometStart = true; }
+  void start()                   { m_animationCometStart = true; m_iPos = 0; }
   void reverseDirection()        { m_iDirection *= -1;           }
   void setSpeed(float speed)     { m_speed       = speed;        }
   void setFadeSize(int fadeSize) { m_fadeAmt     = fadeSize;     }
@@ -55,7 +56,7 @@ public:
     // Check if Comet hits end and reverse Direction
     if (m_iPos >= (NUM_LEDS - m_size) || m_iPos <= 0)
     {
-      // reverseDirection();
+      //reverseDirection();
       m_iPos = 0;
       FastLED.clear();
 
@@ -98,6 +99,7 @@ public:
 private:
   CRGB (&A_leds)[288];
   const int NUM_LEDS = 288;
+ 
 
   byte    m_fadeAmt             = 288;
   int     m_size                = 2;

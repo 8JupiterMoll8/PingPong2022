@@ -13,13 +13,16 @@ public:
 
   void loop()
   {
-    m_stundenZeiger.setSpeed(500);
-    m_minutenZeiger.setSpeed(500);
-    m_sekundenZeiger.setSpeed(500);
+    m_stundenZeiger.setSpeed(100);
+    m_minutenZeiger.setSpeed(9000);
+    m_sekundenZeiger.setSpeed(100);
 
     m_stundenZeiger.runSpeed();
     m_minutenZeiger.runSpeed();
     m_sekundenZeiger.runSpeed();
+
+    
+   
   }
 };
 
