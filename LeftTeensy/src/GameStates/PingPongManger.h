@@ -7,7 +7,7 @@
 class PingPongManger : public GameManager
 {
 public:
-    PingPongManger(RacketLeft &leftRacket, Racket &rightRacket, Table &leftTable, Table &rightTable, Comet &comet) :
+    PingPongManger(Racket &leftRacket, Racket &rightRacket, Table &leftTable, Table &rightTable, Comet &comet) :
     GameManager(leftRacket, rightRacket, leftTable, rightTable),
     m_comet(comet)
     {

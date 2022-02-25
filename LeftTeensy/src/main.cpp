@@ -14,10 +14,7 @@
 #include "I_InputSensorBhv.hpp"
 #include "InputSensorRaw.hpp"
 #include "InputSensorSmooth.hpp"
-#include "InputSensorET.hpp"
-#include "InputSensor_IC2.h"
 #include "Piezo.hpp"
-#include "ReciverDataET.hpp"
 #include "Birnen.hpp"
 #include <EasyTransfer.h>
 #include "Swing.hpp"
@@ -26,7 +23,6 @@
 #include "Pressure.hpp"
 #include "Speed.hpp"
 #include "Racket.hpp"
-#include "RacketLeft.h"
 #include "Table.h"
 #include "GameManager.h"
 #include "MoveNeopixel.h"
@@ -73,26 +69,44 @@ KnightRider knightRider(CH);
 ███████╗███████╗██║        ██║       ██║  ██║██║  ██║╚██████╗██║  ██╗███████╗   ██║
 ╚══════╝╚══════╝╚═╝        ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
 */
-// IC2
-#include"ReciverData_IC2.h"
-TransmitData lr_IC2_SensorData;   
 
-// Reciver EasyTransfer
-EasyTransfer lr_ET;
-// give a name to the group of data
-RECEIVE_DATA_STRUCTURE lr_ET_SensorData;
+const uint64_t lr_ADRESS {0xF0F0F0F0D2LL};
+const byte lr_CHANNEL    {121};
+const byte lr_CE_PIN     {21};
+const byte lr_CSN_PIN    {20};
 
-//Hit 
+RF24        lr_radio(lr_CE_PIN, lr_CSN_PIN);
+ReciverData lr_rf24SensorData;
+Reciver     lr_RF24_Reciver(lr_radio, lr_ADRESS, lr_CHANNEL, lr_rf24SensorData);
+
+
+// HIT Behaviour
 const int LR_PIEZO_THERSHOLD_MIN{5};
 const int LR_PIEZO_PEAKTRACK_MILLIS{3};
-const int LR_PIEZO_AFTERSCHOCK_MILLIS{50};
+const int LR_PIEZO_AFTERSCHOCK_MILLIS{25};
 
-PeakDetector  lr_PiezoDetector(LR_PIEZO_THERSHOLD_MIN, LR_PIEZO_PEAKTRACK_MILLIS, LR_PIEZO_AFTERSCHOCK_MILLIS);
-Counter       lr_PiezoCounter;
-InputSensorET lr_PiezoInput(lr_ET_SensorData);
-Piezo lr_Piezo(lr_PiezoDetector, lr_PiezoCounter, lr_PiezoInput);
+PeakDetector   lr_PiezoDetector(LR_PIEZO_THERSHOLD_MIN, LR_PIEZO_PEAKTRACK_MILLIS, LR_PIEZO_AFTERSCHOCK_MILLIS);
+Counter        lr_PiezoCounter;
+InputSensorRaw lr_PiezoInput(lr_rf24SensorData);
+Piezo          lr_Piezo(lr_PiezoDetector, lr_PiezoCounter, lr_PiezoInput);
 
-RacketLeft leftRacket(lr_Piezo);
+// Motion Behaviour
+Speed  lr_speed(lr_rf24SensorData);
+Swing  lr_Swing(lr_rf24SensorData);
+SF     lr_fusion;
+Mahony lr_Mahony(lr_rf24SensorData, lr_fusion);
+
+// Button Behaviour
+Pressure lr_pressure(lr_rf24SensorData);
+
+// Left Racket
+Racket leftRacket(lr_Piezo, lr_speed, lr_Swing, lr_Mahony, lr_pressure);
+
+// AudioVisual Behaviour for Swing without Ballcontact
+Bargraph bargraph2(A_ledStrip);
+// AudioVisual Behaviour for Swing after Ballcontact
+Comet comet2(A_ledStrip);
+SwingController swingController2(comet2,bargraph2,leftRacket);
 
 
 
@@ -107,14 +121,14 @@ RacketLeft leftRacket(lr_Piezo);
 ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
 */
 // RF24 RECIVER 
-const uint64_t ADRESS {0xF0F0F0F0E1LL};
-const byte CHANNEL    {125};
-const byte CE_PIN     {21};
-const byte CSN_PIN    {20};
+const uint64_t rr_ADRESS {0xF0F0F0F0E1LL};
+const byte rr_CHANNEL    {125};
+const byte rr_CE_PIN     {16}; 
+const byte rr_CSN_PIN    {15}; 
 
-RF24 radio(CE_PIN, CSN_PIN);
-ReciverData rr_rf24SensorData;
-Reciver rr_RF24_Reciver(radio, ADRESS, CHANNEL, rr_rf24SensorData);
+   RF24 rr_radio(rr_CE_PIN, rr_CSN_PIN);
+   ReciverData rr_rf24SensorData;
+   Reciver rr_RF24_Reciver(rr_radio, rr_ADRESS, rr_CHANNEL, rr_rf24SensorData);
 
 // HIT Behaviour
 const int RR_PIEZO_THERSHOLD_MIN{5};
@@ -215,7 +229,7 @@ Table rightTable(rt_Piezo);
   //AccelStepper sekundenZeiger(1, A_STEPPER_STEP_PIN, A_STEPPER_DIR_PIN);
   
   //Clock clock(stundenZeiger,minutenZeiger,sekundenZeiger);
-    Clock clock;
+   // Clock clock;
 
 
 /*
@@ -227,11 +241,7 @@ Table rightTable(rt_Piezo);
  ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
                                                                                                       
 */
-//GameManager gameManger(leftRacket,rightRacket,leftTable,rightTable);
   PingPongManger pingpongManager(leftRacket,rightRacket,leftTable,rightTable,comet);
- //MovePixel movePixel(A_ledStrip);
-
-
 
 
 
@@ -260,14 +270,28 @@ void setup()
   LEDS.setBrightness(255);
 
   // Init EasyTransfer
-  Serial8.begin(6000000);
-  lr_ET.begin(details(lr_ET_SensorData), &Serial8);
+  //Serial8.begin(6000000);
+  //lr_ET.begin(details(lr_ET_SensorData), &Serial8);
 
   // Init RF24 Reciver Right Racket
-  rr_RF24_Reciver.setup();
+
+  // turn off  lr_RF24_Reciver
+   pinMode(lr_CE_PIN,OUTPUT);
+   pinMode(lr_CSN_PIN,OUTPUT);
+   pinMode(rr_CE_PIN,OUTPUT);
+   pinMode(rr_CSN_PIN,OUTPUT);
+ 
+ 
+  digitalWrite(rr_CSN_PIN, HIGH);
+  lr_RF24_Reciver.setup();
+   digitalWrite(lr_CSN_PIN, HIGH);
+ rr_RF24_Reciver.setup();
+
+
 
   // Init Clock
-   clock.setup();
+   //clock.setup();
+
 }
 
 /*
@@ -281,10 +305,16 @@ void setup()
 void loop()
 {
 // Loop EasyTransfer
- lr_ET.receiveData();
+// lr_ET.receiveData();
 
 // Loop RF24
-rr_RF24_Reciver.loop();
+
+ digitalWrite(lr_CSN_PIN, HIGH); // turn off  lr_RF24_Reciver
+ rr_RF24_Reciver.loop();
+
+digitalWrite(rr_CSN_PIN, HIGH); // turn off  rr_RF24_Reciver
+lr_RF24_Reciver.loop();
+
 
 //! Loop only one loop for each obeject
 // Physical GameObjects
@@ -300,43 +330,41 @@ rightTable.loop();
 
 // Audiovisual Behavior for right Racket
 // Bargraph and Comet right now
-//swingController.loop();
-//FastLED.show();
-
-// if(leftRacket.isHit())
-// {
-//    Serial.println("HIT LEFT RACKET");
-// }
+swingController.loop();
+swingController2.loop();
+FastLED.show();
 
 
 
-clock.loop();
+
+
+//clock.loop();
 
 // BLINKING ON AND OFF WHEN BALL HITS RACKET RIGHT
-if(leftRacket.isHit())
-{
- Serial.println(lr_ET_SensorData.speed);
+// if(leftRacket.isHit() || rightRacket.isHit())
+// {
+//     Serial.println("RightRacket Hit");
    
 
-   usbMIDI.sendNoteOn(74,127,11);
+//    usbMIDI.sendNoteOn(74,127,11);
    
         
 
-        for (int j = 0; j < 200; j++)
-        {
+//         for (int j = 0; j < 200; j++)
+//         {
 
-         A_ledStrip[j] = CRGB(255, 255, 255);
-        }
-}
-else
-{
-      for (int j = 0; j < 200; j++)
-        {
+//         // A_ledStrip[j] = CRGB(255, 255, 255);
+//         }
+// }
+// else
+// {
+//       for (int j = 0; j < 200; j++)
+//         {
 
-         A_ledStrip[j].nscale8(0);
-        }
-   usbMIDI.sendNoteOff(74,127,11);
-}
+//         // A_ledStrip[j].nscale8(0);
+//         }
+//    usbMIDI.sendNoteOff(74,127,11);
+// }
 
 
 
@@ -349,8 +377,17 @@ else
 //! From the amount of ballwechsel
 // Light Bulb Speed Slow
 
-  knightRider.loop();
-  knightRider.setSpeed(25);
+  //knightRider.loop();
+  //knightRider.setSpeed(25);
+
+
+
+
+
+
+
+
+
 
 
 

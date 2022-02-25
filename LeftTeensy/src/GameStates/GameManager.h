@@ -1,7 +1,6 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
 #include"Racket.hpp"
-#include "RacketLeft.h"
 #include "Table.h"
 
 
@@ -11,7 +10,7 @@ class GameManager
 {
 protected:
 
-RacketLeft  &m_leftRacket;
+Racket  &m_leftRacket;
 Racket &m_rightRacket;
 Table       &m_leftTable;
 Table       &m_rightTable;
@@ -60,7 +59,7 @@ virtual void ok_Ballwachsel() = 0;
 
 
 public:
-    GameManager(RacketLeft &leftRacket, Racket &rightRacket, Table &leftTable, Table&rightTable):
+    GameManager(Racket &leftRacket, Racket &rightRacket, Table &leftTable, Table&rightTable):
     m_leftRacket(leftRacket),
     m_rightRacket(rightRacket),
     m_leftTable(leftTable),
