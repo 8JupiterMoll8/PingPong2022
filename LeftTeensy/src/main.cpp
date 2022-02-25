@@ -90,7 +90,6 @@ const int LR_PIEZO_AFTERSCHOCK_MILLIS{50};
 PeakDetector  lr_PiezoDetector(LR_PIEZO_THERSHOLD_MIN, LR_PIEZO_PEAKTRACK_MILLIS, LR_PIEZO_AFTERSCHOCK_MILLIS);
 Counter       lr_PiezoCounter;
 InputSensorET lr_PiezoInput(lr_ET_SensorData);
-//InputSensor_IC2 lr_PiezoInput(lr_IC2_SensorData);
 Piezo lr_Piezo(lr_PiezoDetector, lr_PiezoCounter, lr_PiezoInput);
 
 RacketLeft leftRacket(lr_Piezo);
@@ -154,6 +153,8 @@ SwingController swingController(comet,bargraph,rightRacket);
 ███████╗███████╗██║        ██║          ██║   ██║  ██║██████╔╝███████╗███████╗
 ╚══════╝╚══════╝╚═╝        ╚═╝          ╚═╝   ╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝
  */
+
+
 /*PIEZO*/
 const int LT_PIEZO_PIN                  {A8};
 const int LT_PIEZO_THERSHOLD_MIN        {50};
