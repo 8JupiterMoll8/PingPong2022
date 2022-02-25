@@ -29,6 +29,10 @@
 
 
 
+
+
+
+
 /*
 ██╗     ██╗ ██████╗ ██╗  ██╗████████╗
 ██║     ██║██╔════╝ ██║  ██║╚══██╔══╝
@@ -75,7 +79,7 @@ struct SEND_DATA_STRUCTURE
   //put your variable definitions here for the data you want to send
   //THIS MUST BE EXACTLY THE SAME ON THE OTHER ARDUINO
   int16_t pz;
-  //float speed;
+  float speed;
   // int32_t gx;
   // int32_t gz;
   // int32_t gy;
@@ -134,22 +138,20 @@ void setup()
   Serial.begin(9600);
  
   // while (!Serial )
-  // {
-  // }
+  //  {
+  //  }
 
  // Init Light Bulb
-  setup_Dimmer();
+  //setup_Dimmer();
 
   // Init WS2182B
-  LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>(A_ledStrip, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  LEDS.addLeds<SK9822, 26, 27, RGB, DATA_RATE_MHZ(15) >(A_ledStrip, NUM_LEDS);  // BGR ordering is typical
   //LEDS.addLeds<WS2812SERIAL, DATA_PIN_2, RGB>(B_ledStrip, 74);
   LEDS.setBrightness(255);
 
  // Init EasyTransfer
-  Serial8.begin(115200); // Open Serial8 for EaesyTransfer
+  Serial8.begin(6000000); // Open Serial8 for EaesyTransfer Serial1.begin(6000000);
   ET.begin(details(mydata), &Serial8);
-
-
 
   // Init RF24 Reciver Lrft Racket
   lr_reciver.setup();
@@ -165,8 +167,10 @@ void loop()
   blink();
   
   leftRacket.loop();
+
   // ET Serial8
   mydata.pz  = lr_rf24SensorData.pz;
+  mydata.speed = 1.00;
   ET.sendData();
 
 
@@ -180,7 +184,7 @@ void loop()
   FastLED.show();
 
   // KnightRider
-  knightRider.loop();
+ // knightRider.loop();
 }
 
 void blink()
@@ -195,3 +199,4 @@ void blink()
     ms_blink = 0;
   }
 }
+

@@ -15,6 +15,7 @@
 #include "InputSensorRaw.hpp"
 #include "InputSensorSmooth.hpp"
 #include "InputSensorET.hpp"
+#include "InputSensor_IC2.h"
 #include "Piezo.hpp"
 #include "ReciverDataET.hpp"
 #include "Birnen.hpp"
@@ -72,6 +73,10 @@ KnightRider knightRider(CH);
 ███████╗███████╗██║        ██║       ██║  ██║██║  ██║╚██████╗██║  ██╗███████╗   ██║
 ╚══════╝╚══════╝╚═╝        ╚═╝       ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
 */
+// IC2
+#include"ReciverData_IC2.h"
+TransmitData lr_IC2_SensorData;   
+
 // Reciver EasyTransfer
 EasyTransfer lr_ET;
 // give a name to the group of data
@@ -85,6 +90,7 @@ const int LR_PIEZO_AFTERSCHOCK_MILLIS{50};
 PeakDetector  lr_PiezoDetector(LR_PIEZO_THERSHOLD_MIN, LR_PIEZO_PEAKTRACK_MILLIS, LR_PIEZO_AFTERSCHOCK_MILLIS);
 Counter       lr_PiezoCounter;
 InputSensorET lr_PiezoInput(lr_ET_SensorData);
+//InputSensor_IC2 lr_PiezoInput(lr_IC2_SensorData);
 Piezo lr_Piezo(lr_PiezoDetector, lr_PiezoCounter, lr_PiezoInput);
 
 RacketLeft leftRacket(lr_Piezo);
@@ -249,16 +255,12 @@ void setup()
      setup_Dimmer();
 
   // Init WS2182B
-  LEDS.addLeds<SK9822, 26, 27, RGB, DATA_RATE_MHZ(12) >(A_ledStrip, NUM_LEDS);  // BGR ordering is typical
-  //LEDS.addLeds<WS2812SERIAL, DATA_PIN, RGB>  (A_ledStrip, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  //LEDS.addLeds<WS2812SERIAL, DATA_PIN_2, RGB>(B_ledStrip, 74);
+  LEDS.addLeds<SK9822, 26, 27, RGB, DATA_RATE_MHZ(15) >(A_ledStrip, NUM_LEDS);  // BGR ordering is typical
   LEDS.setBrightness(255);
 
   // Init EasyTransfer
-  Serial8.begin(115200);
+  Serial8.begin(6000000);
   lr_ET.begin(details(lr_ET_SensorData), &Serial8);
-
- 
 
   // Init RF24 Reciver Right Racket
   rr_RF24_Reciver.setup();
@@ -278,10 +280,10 @@ void setup()
 void loop()
 {
 // Loop EasyTransfer
-   lr_ET.receiveData();
+ lr_ET.receiveData();
 
 // Loop RF24
-   rr_RF24_Reciver.loop();
+rr_RF24_Reciver.loop();
 
 //! Loop only one loop for each obeject
 // Physical GameObjects
@@ -298,17 +300,24 @@ rightTable.loop();
 // Audiovisual Behavior for right Racket
 // Bargraph and Comet right now
 //swingController.loop();
-FastLED.show();
+//FastLED.show();
+
+// if(leftRacket.isHit())
+// {
+//    Serial.println("HIT LEFT RACKET");
+// }
 
 
 
-//clock.loop();
+clock.loop();
 
-
-if(rightRacket.isHit())
+// BLINKING ON AND OFF WHEN BALL HITS RACKET RIGHT
+if(leftRacket.isHit())
 {
+ Serial.println(lr_ET_SensorData.speed);
    
-   usbMIDI.sendNoteOn(54,127,11);
+
+   usbMIDI.sendNoteOn(74,127,11);
    
         
 
@@ -325,7 +334,7 @@ else
 
          A_ledStrip[j].nscale8(0);
         }
-   usbMIDI.sendNoteOff(54,127,11);
+   usbMIDI.sendNoteOff(74,127,11);
 }
 
 
@@ -339,14 +348,8 @@ else
 //! From the amount of ballwechsel
 // Light Bulb Speed Slow
 
-   //knightRider.loop();
-   //knightRider.setSpeed(50);
-
-
-
-
-  
-
+  knightRider.loop();
+  knightRider.setSpeed(25);
 
 
 
@@ -355,4 +358,4 @@ else
 } // End Loop
 
 
-void receive(int numBytes) {}          
+      

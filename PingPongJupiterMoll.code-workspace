@@ -20,7 +20,20 @@
 	"settings": {
 		"files.associations": {
 			"memory": "cpp",
-			"random": "cpp"
+			"random": "cpp",
+			"array": "cpp",
+			"string": "cpp",
+			"*.tcc": "cpp",
+			"vector": "cpp",
+			"exception": "cpp",
+			"functional": "cpp",
+			"istream": "cpp",
+			"limits": "cpp",
+			"ostream": "cpp",
+			"ratio": "cpp",
+			"sstream": "cpp",
+			"streambuf": "cpp",
+			"thread": "cpp"
 		}
 	}
 }
