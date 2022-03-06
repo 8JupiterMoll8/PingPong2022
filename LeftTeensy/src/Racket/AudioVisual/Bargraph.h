@@ -7,14 +7,14 @@
 class Bargraph
 {
 private:
-  CRGB(&m_A_ledStrip)[288];
-  const float ledCount = 288.0;
+  CRGB(&m_A_ledStrip)[360];
+  const float ledCount = 360.0;
   float m_speed = 0;
   float m_speed_max = 0.0;
   float m_speed_min = 30.0;
 
 public:
-  Bargraph(CRGB (&ledStrip)[288]) : m_A_ledStrip(ledStrip)
+  Bargraph(CRGB (&ledStrip)[360]) : m_A_ledStrip(ledStrip)
   {
   }
 
@@ -54,7 +54,7 @@ public:
 
   void setMapSpeed(float input, float min, float max)
   {
-    m_speed = input;
+    m_speed     = input;
     m_speed_min = min;
     m_speed_max = max;
   }

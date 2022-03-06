@@ -8,14 +8,12 @@
 #include "Reciver.hpp"
 #include "ReciverData.hpp"
 #include "PeaKDetector.hpp"
-
 #include "ResponsiveAnalogRead.h"
 #include "Counter.hpp"
 #include "I_InputSensorBhv.hpp"
 #include "InputSensorRaw.hpp"
 #include "InputSensorSmooth.hpp"
 #include "Piezo.hpp"
-#include "Birnen.hpp"
 #include <EasyTransfer.h>
 #include "Swing.hpp"
 #include "SensorFusion.h"
@@ -26,12 +24,12 @@
 #include "Table.h"
 #include "GameManager.h"
 #include "MoveNeopixel.h"
-#include "KnightRider.h"
 #include "Comet.h"
 #include "Bargraph.h"
 #include "SwingController.h"
 #include "PingPongManger.h"
-#include "Clock.h"
+#include "CometRaw.h"
+
 
 
 
@@ -47,17 +45,14 @@
 */
 
 // How many leds in your strip?
-const int NUM_LEDS  = 288;
+const int NUM_LEDS  = 360;
+CRGB LedStrip[NUM_LEDS];
 
-CRGB A_ledStrip[NUM_LEDS];
+CometRaw cometRaw(LedStrip,1);
+CometRaw cometRaw2(LedStrip);
 
-//MoveNeopixel moveNeopixel(A_ledStrip);
-//MoveNeopixel moveNeopixelA(A_ledStrip);
 
-//Neopixel Ledstrio Animation for Swing
 
-// LightBulb for Animation for Time
-KnightRider knightRider(CH);
 
 
 
@@ -103,9 +98,9 @@ Pressure lr_pressure(lr_rf24SensorData);
 Racket leftRacket(lr_Piezo, lr_speed, lr_Swing, lr_Mahony, lr_pressure);
 
 // AudioVisual Behaviour for Swing without Ballcontact
-Bargraph bargraph2(A_ledStrip);
+Bargraph bargraph2(LedStrip);
 // AudioVisual Behaviour for Swing after Ballcontact
-Comet comet2(A_ledStrip);
+Comet comet2(LedStrip,1);
 SwingController swingController2(comet2,bargraph2,leftRacket);
 
 
@@ -153,9 +148,9 @@ Pressure rr_pressure(rr_rf24SensorData);
 Racket rightRacket(rr_Piezo, rr_speed, rr_Swing, rr_Mahony, rr_pressure);
 
 // AudioVisual Behaviour for Swing without Ballcontact
-Bargraph bargraph(A_ledStrip);
+Bargraph bargraph(LedStrip);
 // AudioVisual Behaviour for Swing after Ballcontact
-Comet comet(A_ledStrip);
+Comet comet(LedStrip);
 SwingController swingController(comet,bargraph,rightRacket);
 
 
@@ -173,7 +168,7 @@ SwingController swingController(comet,bargraph,rightRacket);
 const int LT_PIEZO_PIN                  {A8};
 const int LT_PIEZO_THERSHOLD_MIN        {50};
 const int LT_PIEZO_PEAKTRACK_MILLIS      {5};
-const int LT_PIEZO_AFTERSCHOCK_MILLIS {500};
+const int LT_PIEZO_AFTERSCHOCK_MILLIS   {500};
 
 PeakDetector         lt_PiezoDetector(LT_PIEZO_THERSHOLD_MIN, LT_PIEZO_PEAKTRACK_MILLIS, LT_PIEZO_AFTERSCHOCK_MILLIS);
 ResponsiveAnalogRead lt_PiezoSmoother(LT_PIEZO_PIN, false);
@@ -206,30 +201,7 @@ Piezo rt_Piezo(rt_PiezoDetector, rt_PiezoCounter, rt_PiezoInput); // Composition
 
 Table rightTable(rt_Piezo);
 
-/*
- ██████╗██╗      ██████╗  ██████╗██╗  ██╗
-██╔════╝██║     ██╔═══██╗██╔════╝██║ ██╔╝
-██║     ██║     ██║   ██║██║     █████╔╝ 
-██║     ██║     ██║   ██║██║     ██╔═██╗ 
-╚██████╗███████╗╚██████╔╝╚██████╗██║  ██╗
- ╚═════╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝
-                                         
-*/
-  // const byte X_STEPPER_STEP_PIN {41};
-  // const byte X_STEPPER_DIR_PIN  {40};
 
-  // const byte Y_STEPPER_STEP_PIN {39};
-  // const byte Y_STEPPER_DIR_PIN  {38};
-
-  // const byte A_STEPPER_STEP_PIN {37};
-  // const byte A_STEPPER_DIR_PIN  {36};
-
-  //AccelStepper stundenZeiger (1, X_STEPPER_STEP_PIN, X_STEPPER_DIR_PIN);
-  //AccelStepper minutenZeiger (1, Y_STEPPER_STEP_PIN, Y_STEPPER_DIR_PIN);
-  //AccelStepper sekundenZeiger(1, A_STEPPER_STEP_PIN, A_STEPPER_DIR_PIN);
-  
-  //Clock clock(stundenZeiger,minutenZeiger,sekundenZeiger);
-   // Clock clock;
 
 
 /*
@@ -262,35 +234,22 @@ void setup()
   while (!Serial)
   {
   }
-  // Init Light Bulb
-     setup_Dimmer();
 
   // Init WS2182B
-  LEDS.addLeds<SK9822, 26, 27, RGB, DATA_RATE_MHZ(15) >(A_ledStrip, NUM_LEDS);  // BGR ordering is typical
+  LEDS.addLeds<SK9822, 26, 27, RGB, DATA_RATE_MHZ(12) >(LedStrip, NUM_LEDS);  // BGR ordering is typical
   LEDS.setBrightness(255);
+  //LEDS.setMaxPowerInMilliWatts(300);
 
-  // Init EasyTransfer
-  //Serial8.begin(6000000);
-  //lr_ET.begin(details(lr_ET_SensorData), &Serial8);
+  // Init RF24 Reciver
+  pinMode(lr_CE_PIN, OUTPUT);
+  pinMode(lr_CSN_PIN, OUTPUT);
+  pinMode(rr_CE_PIN, OUTPUT);
+  pinMode(rr_CSN_PIN, OUTPUT);
 
-  // Init RF24 Reciver Right Racket
-
-  // turn off  lr_RF24_Reciver
-   pinMode(lr_CE_PIN,OUTPUT);
-   pinMode(lr_CSN_PIN,OUTPUT);
-   pinMode(rr_CE_PIN,OUTPUT);
-   pinMode(rr_CSN_PIN,OUTPUT);
- 
- 
   digitalWrite(rr_CSN_PIN, HIGH);
   lr_RF24_Reciver.setup();
-   digitalWrite(lr_CSN_PIN, HIGH);
- rr_RF24_Reciver.setup();
-
-
-
-  // Init Clock
-   //clock.setup();
+  digitalWrite(lr_CSN_PIN, HIGH);
+  rr_RF24_Reciver.setup();
 
 }
 
@@ -304,19 +263,13 @@ void setup()
  */
 void loop()
 {
-// Loop EasyTransfer
-// lr_ET.receiveData();
 
 // Loop RF24
+digitalWrite(lr_CSN_PIN, HIGH); // turn OFF lr_RF24_Reciver
+rr_RF24_Reciver.loop();         // turn ON  rr_RF24_Reciver
+digitalWrite(rr_CSN_PIN, HIGH); // turn OFF rr_RF24_Reciver
+lr_RF24_Reciver.loop();         // turn ON  lr_RF24_Reciver
 
- digitalWrite(lr_CSN_PIN, HIGH); // turn off  lr_RF24_Reciver
- rr_RF24_Reciver.loop();
-
-digitalWrite(rr_CSN_PIN, HIGH); // turn off  rr_RF24_Reciver
-lr_RF24_Reciver.loop();
-
-
-//! Loop only one loop for each obeject
 // Physical GameObjects
 leftRacket.loop();
 rightRacket.loop();
@@ -325,70 +278,19 @@ rightTable.loop();
 
 
 // GameManger for Aufschlag and BallwechselCounter
-//gameManger.loop();
 //pingpongManager.loop();
 
-// Audiovisual Behavior for right Racket
-// Bargraph and Comet right now
-swingController.loop();
-swingController2.loop();
-FastLED.show();
+// Audiovisual Behavior for Rackets
+//swingController.loop();
+//swingController2.loop();
+cometRaw.loop();
+cometRaw2.loop();
 
 
 
 
-
-//clock.loop();
-
-// BLINKING ON AND OFF WHEN BALL HITS RACKET RIGHT
-// if(leftRacket.isHit() || rightRacket.isHit())
-// {
-//     Serial.println("RightRacket Hit");
-   
-
-//    usbMIDI.sendNoteOn(74,127,11);
-   
-        
-
-//         for (int j = 0; j < 200; j++)
-//         {
-
-//         // A_ledStrip[j] = CRGB(255, 255, 255);
-//         }
-// }
-// else
-// {
-//       for (int j = 0; j < 200; j++)
-//         {
-
-//         // A_ledStrip[j].nscale8(0);
-//         }
-//    usbMIDI.sendNoteOff(74,127,11);
-// }
-
-
-
-
-
-
-
-
-//!This the Time Displayer his speed is dependet from 
-//! From the amount of ballwechsel
-// Light Bulb Speed Slow
-
-  //knightRider.loop();
-  //knightRider.setSpeed(25);
-
-
-
-
-
-
-
-
-
-
+  FastLED.show();
+ 
 
 
 
