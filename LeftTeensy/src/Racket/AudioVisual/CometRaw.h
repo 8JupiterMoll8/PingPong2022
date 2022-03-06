@@ -47,8 +47,8 @@ public:
           Serial.println(m_iPos);
          //m_iDirection *= -1;
          m_iPos = m_startPosition;
-         m_acceleration = 0.01;
-         m_speed        = 1.25;
+         //m_acceleration = 0.01;
+        // m_speed        = 10.25;
         
        }
 
@@ -56,7 +56,7 @@ public:
        for (int i = 0; i < m_size; i++)
        {
          A_leds[(int)m_iPos + i] = CRGB(255, 255, 255);
-         usbMIDI.sendNoteOn(m_iPos, m_midiVelocity, 2);
+         usbMIDI.sendNoteOn(map(m_iPos,0,360,0,127), m_midiVelocity, 2);
        }
 
        // Randomly fade the LEDs
@@ -70,7 +70,7 @@ public:
         
          
 
-         usbMIDI.sendNoteOff(j, 75, 2);
+         usbMIDI.sendNoteOff(map(j,0,360,0,127), 75, 2);
        }
      }
 
@@ -95,8 +95,8 @@ private:
   float   m_startPosition       = 0.0;
   byte    m_fadeAmt             = 200;
   int     m_size                = 7;
-  float   m_speed               = 10.25;
-  float   m_acceleration        = 0.01;
+  float   m_speed               = 1.25;
+  float   m_acceleration        = 0.001;
   float   m_iPos                = 0.0;
   float   m_iDirection          = 1.0;
   byte    m_midiVelocity        = 75;

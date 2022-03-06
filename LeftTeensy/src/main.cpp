@@ -281,9 +281,9 @@ rightTable.loop();
 //pingpongManager.loop();
 
 // Audiovisual Behavior for Rackets
-//swingController.loop();
+swingController.loop();
 //swingController2.loop();
-cometRaw.loop();
+//cometRaw.loop();
 cometRaw2.loop();
 
 
