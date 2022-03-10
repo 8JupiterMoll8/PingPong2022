@@ -15,6 +15,10 @@
 		{
 			"name": "Clock",
 			"path": "Clock"
+		},
+		{
+			"name": "MagicDressFastPrototypv2",
+			"path": "..\\..\\PlatformIO\\Projects\\MagicDressFastPrototypv2"
 		}
 	],
 	"settings": {

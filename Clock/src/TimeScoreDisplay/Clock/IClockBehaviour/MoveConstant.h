@@ -6,24 +6,30 @@
 #include "IMoveBehaviour.h"
 class MoveConstant : public IMoveBehaviour
 {
+
 public:
-  MoveConstant(AccelStepper &xAxis, AccelStepper &yAxis, AccelStepper &aAxis) : IMoveBehaviour(xAxis, yAxis, aAxis)
+  MoveConstant(AccelStepper &Axis) : 
+  IMoveBehaviour(Axis)
   {
+      m_speed = 4000;
   }
 
-  void loop()
+  virtual void loop() override
   {
-    m_stundenZeiger.setSpeed(100);
-    m_minutenZeiger.setSpeed(9000);
-    m_sekundenZeiger.setSpeed(100);
-
-    m_stundenZeiger.runSpeed();
-    m_minutenZeiger.runSpeed();
-    m_sekundenZeiger.runSpeed();
-
+    Zeiger.setSpeed(m_speed);
+    Zeiger.runSpeed();
+    //Zeiger.runNow();
     
-   
+  
   }
+
+  virtual void setSpeed(int speed) override
+  {
+    m_speed = speed;
+  }
+
+
+ 
 };
 
 #endif

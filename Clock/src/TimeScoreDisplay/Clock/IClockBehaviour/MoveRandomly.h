@@ -8,24 +8,20 @@
 class MoveRandomly : public IMoveBehaviour
 {
 public:
-    MoveRandomly(AccelStepper &xAxis, AccelStepper &yAxis, AccelStepper &aAxis) : IMoveBehaviour(xAxis, yAxis, aAxis)
+  MoveRandomly(AccelStepper &Axis) : IMoveBehaviour(Axis)
   {
   }
 
-    void loop() 
-    {
-        m_minutenZeiger.runToNewPosition(0);
-        m_minutenZeiger.runToNewPosition(500);
+  virtual void loop() override
+  {
+    Zeiger.runToNewPosition(0);
+    Zeiger.runToNewPosition(500);
+  }
 
-        m_stundenZeiger.runToNewPosition(0);
-        m_stundenZeiger.runToNewPosition(500);
-
-        m_sekundenZeiger.runToNewPosition(0);
-        m_sekundenZeiger.runToNewPosition(500);
-
-    }
-
-
+  virtual void setSpeed(int speed) override
+  {
+    m_speed = speed;
+  }
 };
 
 #endif

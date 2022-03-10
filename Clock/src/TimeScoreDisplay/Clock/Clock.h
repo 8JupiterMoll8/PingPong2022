@@ -10,41 +10,17 @@
 
 class Clock
 {
-public:
-    Clock() : stundenZeiger (1, X_STEPPER_STEP_PIN, X_STEPPER_DIR_PIN),
-              minutenZeiger (1, Y_STEPPER_STEP_PIN, Y_STEPPER_DIR_PIN),
-              sekundenZeiger(1, A_STEPPER_STEP_PIN, A_STEPPER_DIR_PIN )
-    {
-        moveConstant = new MoveConstant(stundenZeiger, minutenZeiger, sekundenZeiger);
-        moveRandomly = new MoveRandomly(stundenZeiger, minutenZeiger, sekundenZeiger);
-        moveTickTack = new MoveTickTack(stundenZeiger, minutenZeiger, sekundenZeiger);
-    }
-
-    virtual void setup()
-    {
-        moveConstant->setup();
-        moveRandomly->setup();
-        moveTickTack->setup();
-    }
-
-    void loop()
-    {
-
-        setMoveBehaviour(moveConstant);
-        executeMoveBehaviour();
-    }
-
-private:
+protected:
 
 //AccelStepper
-    const byte X_STEPPER_STEP_PIN  {41};
-    const byte X_STEPPER_DIR_PIN   {40};
+    const byte X_STEPPER_STEP_PIN  {3};
+    const byte X_STEPPER_DIR_PIN   {4};
 
-    const byte Y_STEPPER_STEP_PIN  {39};
-    const byte Y_STEPPER_DIR_PIN   {38};
+    const byte Y_STEPPER_STEP_PIN  {5};
+    const byte Y_STEPPER_DIR_PIN   {6};
 
-    const byte A_STEPPER_STEP_PIN  {37};
-    const byte A_STEPPER_DIR_PIN   {36};
+    const byte A_STEPPER_STEP_PIN  {7};
+    const byte A_STEPPER_DIR_PIN   {8};
 
     AccelStepper stundenZeiger;
     AccelStepper minutenZeiger;
@@ -55,6 +31,38 @@ private:
     IMoveBehaviour *moveConstant;
     IMoveBehaviour *moveRandomly;
     IMoveBehaviour *moveTickTack;
+
+public:
+    Clock() : stundenZeiger (1, X_STEPPER_STEP_PIN, X_STEPPER_DIR_PIN)
+             
+    {
+        moveConstant = new MoveConstant(stundenZeiger);
+        moveRandomly = new MoveRandomly(stundenZeiger);
+        moveTickTack = new MoveTickTack(stundenZeiger);
+    }
+
+    virtual void setup()
+    {
+        moveConstant->setup();
+        moveRandomly->setup();
+        moveTickTack->setup();
+    }
+
+    void loop()
+    { 
+        
+
+        moveConstant->loop();
+        moveConstant->setSpeed(900);
+
+        //moveTickTack->loop();
+        //moveTickTack->setSpeed(1000);
+        
+
+        //setMoveBehaviour(moveConstant);
+        //executeMoveBehaviour();
+    }
+
  
  //Set Behaviour on Runtime
     void setMoveBehaviour(IMoveBehaviour *mv)

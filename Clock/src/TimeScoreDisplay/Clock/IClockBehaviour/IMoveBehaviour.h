@@ -6,33 +6,24 @@
 class IMoveBehaviour
 {
 public:
-  IMoveBehaviour(AccelStepper &xAxis, AccelStepper &yAxis, AccelStepper &aAxis) : m_stundenZeiger(xAxis),
-                                                                                    m_minutenZeiger(yAxis),
-                                                                                    m_sekundenZeiger(aAxis)
-  {
-  }
+  IMoveBehaviour(AccelStepper &Axis) : 
+  Zeiger(Axis)
+  {}
 
   void setup()
   {
-    m_stundenZeiger.setMaxSpeed(12800);
-    m_stundenZeiger.setSpeed(10000); // had to slow for my motor
-    m_stundenZeiger.setAcceleration(100.0);
+    Zeiger.setMaxSpeed(12800);
+    Zeiger.setSpeed(10000); // had to slow for my motor
+    Zeiger.setAcceleration(100.0);
 
-    m_minutenZeiger.setMaxSpeed(12800);
-    m_minutenZeiger.setSpeed(10000); // had to slow for my motor
-    m_minutenZeiger.setAcceleration(100.0);
-
-    m_sekundenZeiger.setMaxSpeed(12800);
-    m_sekundenZeiger.setSpeed(10000); // had to slow for my motor
-    m_sekundenZeiger.setAcceleration(100.0);
   }
 
   virtual void loop() = 0;
+  virtual void setSpeed(int speed) = 0;
 
 protected:
-  AccelStepper &m_stundenZeiger;
-  AccelStepper &m_minutenZeiger;
-  AccelStepper &m_sekundenZeiger;
+  AccelStepper &Zeiger;
+  int m_speed;
 };
 
 #endif

@@ -44,7 +44,7 @@ public:
       //  Serial.println(m_iDirection);
        if (int(m_iPos) >= (NUM_LEDS - m_size) || m_iPos <= 0)
        {
-          Serial.println(m_iPos);
+          //Serial.println(m_iPos);
          //m_iDirection *= -1;
          m_iPos = m_startPosition;
          //m_acceleration = 0.01;

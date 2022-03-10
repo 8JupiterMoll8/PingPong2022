@@ -3,6 +3,39 @@
 #include "KnightRider.h"
 #include "AccelStepper.h"
 #include "Clock.h"
+#include "IMoveBehaviour.h"
+#include "MoveConstant.h"
+#include "FadeAll.h"
+#include "Fader.h"
+#include <EasyTransfer.h>
+
+/*
+███████╗ █████╗ ███████╗██╗   ██╗████████╗██████╗  █████╗ ███╗   ██╗███████╗███████╗███████╗██████╗ 
+██╔════╝██╔══██╗██╔════╝╚██╗ ██╔╝╚══██╔══╝██╔══██╗██╔══██╗████╗  ██║██╔════╝██╔════╝██╔════╝██╔══██╗
+█████╗  ███████║███████╗ ╚████╔╝    ██║   ██████╔╝███████║██╔██╗ ██║███████╗█████╗  █████╗  ██████╔╝
+██╔══╝  ██╔══██║╚════██║  ╚██╔╝     ██║   ██╔══██╗██╔══██║██║╚██╗██║╚════██║██╔══╝  ██╔══╝  ██╔══██╗
+███████╗██║  ██║███████║   ██║      ██║   ██║  ██║██║  ██║██║ ╚████║███████║██║     ███████╗██║  ██║
+╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝      ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝
+                                                                                                    
+*/
+
+EasyTransfer ET;
+struct SEND_DATA_STRUCTURE
+{
+   uint8_t  leftRacketHit;
+   uint8_t  rightRacketHit;
+   uint8_t  leftTableHit;
+   uint8_t  rightTableHit;
+   uint32_t leftRacketSpeed;
+   uint32_t rightRacketSpeed;
+
+
+};
+
+//give a name to the group of data
+SEND_DATA_STRUCTURE mydata;
+
+
 /*
  ██████╗██╗      ██████╗  ██████╗██╗  ██╗
 ██╔════╝██║     ██╔═══██╗██╔════╝██║ ██╔╝
@@ -12,8 +45,25 @@
  ╚═════╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝
                                          
 */
+    const byte X_STEPPER_STEP_PIN  {3};
+    const byte X_STEPPER_DIR_PIN   {4};
 
-  Clock clock;
+    const byte Y_STEPPER_STEP_PIN  {5};
+    const byte Y_STEPPER_DIR_PIN   {6};
+
+    const byte A_STEPPER_STEP_PIN  {7};
+    const byte A_STEPPER_DIR_PIN   {8};
+
+    AccelStepper l_zeiger (1, X_STEPPER_STEP_PIN, X_STEPPER_DIR_PIN);
+    MoveConstant lz_moveConstant(l_zeiger);
+    IMoveBehaviour *lz_MoveConstant = &lz_moveConstant;
+
+
+
+
+
+
+ // Clock clock;
 
 /*
 ██╗     ██╗ ██████╗ ██╗  ██╗████████╗
@@ -26,61 +76,87 @@
 */
 
 
-KnightRider knightRider(CH);
+KnightRider l_knightRider(l_CH);
+KnightRider r_knightRider(CH);
+FadeAll fadeAll(l_CH,CH);
+Fader fader;
 
 
 void setup() {
+  Serial.begin(115200);
+  Serial1.begin(115200);
+  while(!Serial)
+  {
+
+  }
+  ET.begin(details(mydata), &Serial1);
+
+  // INIT AC BULBS 240V PHASE CONTROLLER
   setup_Dimmer();
+  Serial.println("AC DIMMER 2");
+
+
+  //lz_moveConstant.setup();
+
 }
 
 void loop() 
 {
- // CH1=CH2=CH3=CH4=CH5=CH6=CH7=CH8=30;
-  // knightRider.loop();
-  // knightRider.setSpeed(54);
+//AC 240V BULBS
 
+ //l_knightRider.loop();
+ //l_knightRider.setSpeed(1000);
+ //l_knightRider.setBrightness(30);
+
+ //r_knightRider.loop();
+ //r_knightRider.setSpeed(1000);
+ //r_knightRider.setBrightness(30);
+
+
+
+ //fadeAll.loop();
+
+
+//lz_MoveConstant->loop();
+//lz_MoveConstant->setSpeed(7000);
+//Serial.println(mydata.leftRacketSpeed);
+// STATE: Wait
+if (ET.receiveData())
+{
+  if (mydata.rightRacketHit == 1)  Serial.println("HitRightRacket");
+  if (mydata.rightTableHit  == 1)  Serial.println("HitRightTable ");
+  if (mydata.leftTableHit   == 1)  Serial.println("HitLeftTable ");
  
+  if (mydata.leftRacketHit  == 1)
+  {
+    static int  count = 0;
+    Serial.print("HitLefttRacket : ");
+    Serial.println(count++);
+
+  }  
+}
+
+// STATE: Start
+fader.loop();
+int a = fader.getValue();
+static char selectBulb = 2;
+static int rnd_Speed = 1000;
+
+CH[selectBulb] =   map(a, 0, 100, 60,0 );
+usbMIDI.sendNoteOn(map(a, 0, 100, 70, 5),72,5);
+
+// STATE: Complete
+
+if(fader.isComplete())
+{
+  rnd_Speed = random(500,1000);
+ // Serial.println(rnd_Speed);
+
+  fader.setSpeed(rnd_Speed);
+  fader.restart();
+  selectBulb = char(random(0,8));
+}
 
 
-  static float in = 4.712;
-  float out;
- 
- // do input, etc. here - as long as you don't pause, the LED will keep pulsing
-  
-  // in = in + 0.0001;
-  // if (in > 10.995)
-  //   in = 4.712;
-  // out= sin(in) * 37.5 + 37.5 ;
-  
-
-  //   for (int i = 0; i < 8; i++)
-  //   {
-  //     static byte counter = 0;
-  //     CH[i] = counter++;
-
-  //     if(counter > 75) 
-  //      counter = 0;
-  //      delay(1000);
-  //   }
-
-  //          delay(10);
-
-         for (i=95;i>10;i--)
-          {
-            CH1=CH2=CH3=CH4=CH5=CH6=CH7=CH8=i;
-            delay(delay_time);
-          }
-          
-           for (i=10;i<95;i++)
-          {
-            CH1=CH2=CH3=CH4=CH5=CH6=CH7=CH8=i;
-            delay(delay_time);
-          }
-
-
-
-   
-
- 
 
 }

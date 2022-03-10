@@ -4,7 +4,7 @@
 elapsedMillis ms;
 int incrementSpeed = 0;
 int increaseStepperSpeed();
-AccelStepper Xaxis(1, 2, 5); // pin 2 = step, pin 5 = direction
+AccelStepper Xaxis(1, 3,4); // pin 2 = step, pin 5 = direction
 //AccelStepper Yaxis(1, 3, 6); // pin 2 = step, pin 5 = direction
 
 
