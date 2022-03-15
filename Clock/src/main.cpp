@@ -20,20 +20,18 @@
 */
 
 EasyTransfer ET;
-struct SEND_DATA_STRUCTURE
+struct ET_ReciverData
 {
-   uint8_t  leftRacketHit;
-   uint8_t  rightRacketHit;
-   uint8_t  leftTableHit;
-   uint8_t  rightTableHit;
    uint32_t leftRacketSpeed;
    uint32_t rightRacketSpeed;
-
-
+   uint8_t  rightRacketHit;
+   uint8_t  leftRacketHit;
+   uint8_t  leftTableHit;
+   uint8_t  rightTableHit;
 };
 
 //give a name to the group of data
-SEND_DATA_STRUCTURE mydata;
+ET_ReciverData mydata;
 
 
 /*
@@ -94,7 +92,7 @@ void setup() {
   // INIT AC BULBS 240V PHASE CONTROLLER
   setup_Dimmer();
   Serial.println("AC DIMMER 2");
-
+  
 
   //lz_moveConstant.setup();
 
@@ -123,17 +121,26 @@ void loop()
 // STATE: Wait
 if (ET.receiveData())
 {
-  if (mydata.rightRacketHit == 1)  Serial.println("HitRightRacket");
-  if (mydata.rightTableHit  == 1)  Serial.println("HitRightTable ");
-  if (mydata.leftTableHit   == 1)  Serial.println("HitLeftTable ");
- 
-  if (mydata.leftRacketHit  == 1)
-  {
-    static int  count = 0;
-    Serial.print("HitLefttRacket : ");
-    Serial.println(count++);
 
-  }  
+  if (mydata.rightTableHit == 1)
+    Serial.println("HitRighTable ");
+
+  if (mydata.leftTableHit == 1)
+    Serial.println("HitLefttTable ");
+
+  if (mydata.rightRacketHit == 1)
+  {
+    static int count = 0;
+    Serial.print("HitRightRacket : ");
+    Serial.println(count++);
+  }
+
+  if (mydata.leftRacketHit == 1)
+  {
+    static int count = 0;
+    Serial.print("HitLeftRacket : ");
+    Serial.println(count++);
+  }
 }
 
 // STATE: Start
