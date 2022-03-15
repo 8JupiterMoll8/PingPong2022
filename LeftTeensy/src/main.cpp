@@ -28,6 +28,7 @@
 #include "PingPongManger.h"
 #include "CometRaw.h"
 #include <EasyTransfer.h>
+#include "ETSENDATA.h"
 
 /*
 ███████╗ █████╗ ███████╗██╗   ██╗████████╗██████╗  █████╗ ███╗   ██╗███████╗███████╗███████╗██████╗ 
@@ -40,18 +41,7 @@
 */
 
 EasyTransfer ET;
-struct SEND_DATA_STRUCTURE
-{
-   uint8_t  leftRacketHit;
-   uint8_t  rightRacketHit;
-   uint8_t  leftTableHit;
-   uint8_t  rightTableHit;
-   uint32_t leftRacketSpeed;
-   uint32_t rightRacketSpeed;
-};
-
-//give a name to the group of data
-SEND_DATA_STRUCTURE mydata;
+ETSENDATA mydata;
 
 
 
@@ -269,10 +259,10 @@ void setup()
   pinMode(rr_CE_PIN, OUTPUT);
   pinMode(rr_CSN_PIN, OUTPUT);
 
-  digitalWrite(rr_CSN_PIN, HIGH);
-  lr_RF24_Reciver.setup();
   digitalWrite(lr_CSN_PIN, HIGH);
   rr_RF24_Reciver.setup();
+  digitalWrite(rr_CSN_PIN, HIGH);
+  lr_RF24_Reciver.setup();
 
 }
 
@@ -288,10 +278,10 @@ void loop()
 {
 ///////////////////////////////////////////////////////////
 // LOOP RF24
-digitalWrite(lr_CSN_PIN, HIGH); // turn OFF lr_RF24_Reciver
-rr_RF24_Reciver.loop();         // turn ON  rr_RF24_Reciver
 digitalWrite(rr_CSN_PIN, HIGH); // turn OFF rr_RF24_Reciver
-lr_RF24_Reciver.loop();         // turn ON  lr_RF24_Reciver
+lr_RF24_Reciver.loop();         
+digitalWrite(lr_CSN_PIN, HIGH); // turn OFF lr_RF24_Reciver
+rr_RF24_Reciver.loop();         
 ////////////////////////////////////////////////////////////
 // PHYSICAL GAME_COMPONENTS
 leftRacket.loop();
@@ -300,7 +290,7 @@ leftTable.loop();
 rightTable.loop();
 ////////////////////////////////////////////////////////////
 // GAME_MANEGER_FOR_AUFSCHLAG_UND_BALLWECHSEL
- pingpongManager.loop();
+ //pingpongManager.loop();
 ////////////////////////////////////////////////////////////
 // AUDIOVISUAL_BEHAVIUOR_FOR_RACKETS
 //swingController.loop();
@@ -318,10 +308,10 @@ mydata.rightRacketHit   = rightRacket.isHit();
 mydata.rightRacketSpeed = rightRacket.speed();
 mydata.rightTableHit    = rightTable.isHit();
 
-if(rightTable.isHit()) Serial.println("Hit Right TAble");
-if(leftTable.isHit()) Serial.println("Hit Left TAble");
+if(rightTable.isHit())  Serial.println("Hit Right TAble");
+if(leftTable.isHit())   Serial.println("Hit Left TAble");
 if(rightRacket.isHit()) Serial.println("Hit Right Racket");
-if(leftRacket.isHit()) Serial.println("Hit LEft Racket");
+if(leftRacket.isHit())  Serial.println("Hit LEft Racket");
 
 ET.sendData();
 ////////////////////////////////////////////////////////////

@@ -25,14 +25,20 @@ public:
 	{
 		if (!radio.begin())
 		{
-			Serial.println(F("radio hardware is not responding!!"));
+			if (channel == 121)
+				Serial.println(F(" LEFT Reciver -121 is not responding!!"));
+			if (channel == 125)
+				Serial.println(F(" RIGHT Reciver-125 is not responding!!"));
 			while (1)
 			{
 			}
 		}
 		else
 		{
-			Serial.println(F("Reciver Teensy LC - 122 RIGHT  Racket!!"));
+			if (channel == 121)
+				Serial.println(F(" LEFT Reciver  -121 running !!"));
+			if (channel == 125)
+				Serial.println(F(" RIGHT Reciver -125 running !!"));
 		}
 
 		radio.setChannel(channel);
