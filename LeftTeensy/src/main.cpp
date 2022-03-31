@@ -58,6 +58,7 @@ ETSENDATA mydata;
 // How many leds in your strip?
 const int NUM_LEDS  = 360;
 CRGB LedStrip[NUM_LEDS];
+void blinkAll(void);
 
 CometRaw cometRaw(LedStrip,1);
 CometRaw cometRaw2(LedStrip);
@@ -129,16 +130,16 @@ SwingController swingController2(comet2,bargraph2,leftRacket);
 const uint64_t rr_ADRESS {0xF0F0F0F0E1LL};
 const byte rr_CHANNEL    {125};
 const byte rr_CE_PIN     {16}; 
-const byte rr_CSN_PIN    {15}; 
+const byte rr_CSN_PIN    {15};
 
-   RF24 rr_radio(rr_CE_PIN, rr_CSN_PIN);
-   ReciverData rr_rf24SensorData;
-   Reciver rr_RF24_Reciver(rr_radio, rr_ADRESS, rr_CHANNEL, rr_rf24SensorData);
+RF24 rr_radio(rr_CE_PIN, rr_CSN_PIN);
+ReciverData rr_rf24SensorData;
+Reciver rr_RF24_Reciver(rr_radio, rr_ADRESS, rr_CHANNEL, rr_rf24SensorData);
 /////////////////////////////////////////////////////////////////////////////////////
 
 // HIT Behaviour
-const int RR_PIEZO_THERSHOLD_MIN{5};
-const int RR_PIEZO_PEAKTRACK_MILLIS{3};
+const int RR_PIEZO_THERSHOLD_MIN     {5};
+const int RR_PIEZO_PEAKTRACK_MILLIS  {3};
 const int RR_PIEZO_AFTERSCHOCK_MILLIS{25};
 
 PeakDetector   rr_PiezoDetector(RR_PIEZO_THERSHOLD_MIN, RR_PIEZO_PEAKTRACK_MILLIS, RR_PIEZO_AFTERSCHOCK_MILLIS);
@@ -180,10 +181,10 @@ SwingController swingController(comet,bargraph,rightRacket);
 
 
 /*PIEZO*/
-const int LT_PIEZO_PIN                  {A17};
-const int LT_PIEZO_THERSHOLD_MIN        {50};
+const int LT_PIEZO_PIN                  {A10};
+const int LT_PIEZO_THERSHOLD_MIN        {25};
 const int LT_PIEZO_PEAKTRACK_MILLIS      {5};
-const int LT_PIEZO_AFTERSCHOCK_MILLIS   {75};
+const int LT_PIEZO_AFTERSCHOCK_MILLIS   {20};
 
 PeakDetector         lt_PiezoDetector(LT_PIEZO_THERSHOLD_MIN, LT_PIEZO_PEAKTRACK_MILLIS, LT_PIEZO_AFTERSCHOCK_MILLIS);
 ResponsiveAnalogRead lt_PiezoSmoother(LT_PIEZO_PIN, false);
@@ -203,10 +204,10 @@ Table leftTable(lt_Piezo);
  */
 
 /*PIEZO*/
-const int RT_PIEZO_PIN                 {A16};
-const int RT_PIEZO_THERSHOLD_MIN       {55};
+const int RT_PIEZO_PIN                 {A11};
+const int RT_PIEZO_THERSHOLD_MIN       {25};
 const int RT_PIEZO_PEAKTRACK_MILLIS     {5};
-const int RT_PIEZO_AFTERSCHOCK_MILLIS  {75}; //! This has to be fixed
+const int RT_PIEZO_AFTERSCHOCK_MILLIS  {50}; //! This has to be fixed
 
 PeakDetector rt_PiezoDetector(RT_PIEZO_THERSHOLD_MIN, RT_PIEZO_PEAKTRACK_MILLIS, RT_PIEZO_AFTERSCHOCK_MILLIS);
 ResponsiveAnalogRead rt_PiezoSmoother(RT_PIEZO_PIN, false);
@@ -246,12 +247,19 @@ void setup()
   while (!Serial)
   {
   }
+  /**
+   * 
+   * @param  {} undefined : 
+   */
   // Int Easy Transfer
   ET.begin(details(mydata), &Serial1);
 
   // Init WS2182B
-  LEDS.addLeds<SK9822, 26, 27, RGB, DATA_RATE_MHZ(12) >(LedStrip, NUM_LEDS);  // BGR ordering is typical
-  LEDS.setBrightness(255);
+
+  pinMode(26,OUTPUT);
+  pinMode(27,OUTPUT);
+  LEDS.addLeds<SK9822, 26, 27, RGB, DATA_RATE_MHZ(10) >(LedStrip, NUM_LEDS);  // BGR ordering is typical
+  LEDS.setBrightness(84);
 
   // Init RF24 Reciver
   pinMode(lr_CE_PIN, OUTPUT);
@@ -298,6 +306,8 @@ rightTable.loop();
 //cometRaw.loop();
 //cometRaw2.loop();
 //FastLED.show();
+
+
 ////////////////////////////////////////////////////////////
 // EASY_TRANSFER
 mydata.leftRacketHit   = leftRacket.isHit();
@@ -307,16 +317,72 @@ mydata.leftTableHit    = leftTable.isHit();
 mydata.rightRacketHit   = rightRacket.isHit();
 mydata.rightRacketSpeed = rightRacket.speed();
 mydata.rightTableHit    = rightTable.isHit();
-
-if(rightTable.isHit())  Serial.println("Hit Right TAble");
-if(leftTable.isHit())   Serial.println("Hit Left TAble");
-if(rightRacket.isHit()) Serial.println("Hit Right Racket");
-if(leftRacket.isHit())  Serial.println("Hit LEft Racket");
-
 ET.sendData();
+
+
+// //Debuging Hits
+//if(rightTable.isHit())  Serial.println("Hit Right TAble");
+
+//delay(10);
+
+// if(leftTable.isHit()) {
+//   Serial.print("Hit Left TAble");
+//   Serial.println(lt_PiezoInput.getValue());
+
+// }  
+//if(rightRacket.isHit()) Serial.println("Hit Right Racket");
+//if(leftRacket.isHit())  Serial.println("Hit LEft Racket");
+
+
+
+static int rnd_Note;
+
+if(lr_Piezo.isHit())
+{
+  rnd_Note = random(50,124);
+  Serial.print("Hit PEak:");
+  int velocity = lr_Piezo.hitPeak();
+
+  Serial.println(velocity);
+  usbMIDI.sendNoteOn(rnd_Note, velocity, 10);
+
+}else
+{
+    usbMIDI.sendNoteOff(rnd_Note, 0, 10);
+}
+
+
+//blinkAll();
 ////////////////////////////////////////////////////////////
 // End Loop
-} 
+}
 
+void blinkAll()
+{
+  if (rightTable.isHit())
+  {
+    int a = rt_PiezoDetector.getThersholdMin();
+    Serial.println(a);
+    int b = rt_PiezoSmoother.getValue();
+    Serial.println(b);
 
-      
+    for (int i = 0; i < NUM_LEDS; i++)
+    {
+      LedStrip[i].setRGB(255, 255, 255);
+
+    }
+    usbMIDI.sendNoteOn(72,127,13);
+    
+  }
+  else
+  {
+    for (int i = 0; i < NUM_LEDS; i++)
+    {
+      LedStrip[i].setRGB(0, 0, 0);
+    }
+
+     usbMIDI.sendNoteOn(72,0,13);
+  }
+
+  FastLED.show();
+}

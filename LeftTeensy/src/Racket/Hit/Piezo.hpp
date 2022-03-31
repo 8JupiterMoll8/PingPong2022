@@ -33,6 +33,7 @@ public:
 
 	    
         m_piezoInput = m_inputValue->getValue();
+		
 		m_peakDetecor.setInput(m_piezoInput);
 
 		if(m_peakDetecor.getHit())
@@ -45,16 +46,18 @@ public:
 
 	}
 
-	void countHit()
+	int hitPeak()
 	{
-		m_counter.add();
+		return m_peakDetecor.getHitPeak();
 
 	}
 
-	boolean isHit()
-	{
-		return m_peakDetecor.getHit(); 
+	void countHit(){
+		m_counter.add();
+	}
 
+	boolean isHit(){
+		return m_peakDetecor.getHit(); 
 	}
 
 	int hitSum()

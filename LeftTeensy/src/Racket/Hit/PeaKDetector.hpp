@@ -20,6 +20,8 @@ private:
 	boolean ball ;
 	boolean *ptr = &ball;
 
+	int *ptr_peak = &m_peak;
+
 public:
     PeakDetector(){};
     PeakDetector(int thresholdMin, int peakTrackMillis, int aftershockMillis  ):
@@ -29,8 +31,9 @@ public:
 	{};
 	
 
-
+   //
    boolean getHit() { return *ptr; }
+   int getHitPeak(){return *ptr_peak;}
 
 private: 
 void hitReleased() { *ptr = false; }
@@ -49,8 +52,12 @@ public:
 		case 0:
 			if (m_inputSensor > m_thresholdMin)
 			{
-				//Serial.print("begin peak track ");
-				//Serial.println(m_inputSensor);
+				Serial.print("begin peak track ");
+				Serial.println(m_inputSensor);
+
+				Serial.print("m_thresholdMin : ");
+				Serial.println(m_thresholdMin);
+
 				m_peak = m_inputSensor;
 				m_msec = 0;
 				m_state = 1;
@@ -66,10 +73,15 @@ public:
 			}
 			if (m_msec >= m_peakTrackMillis)
 			{
-				//Serial.print("peak = ");
-				//Serial.println(m_peak);
-			
+				// Serial.print("peak = ");
+				// Serial.println(m_peak);
+				// int velocity = map(peak, thresholdMin, 1023, 1, 127);
+				// Serial.print("velocity = ");
+				// Serial.println(velocity);
+				// usbMIDI.sendNoteOn(note, velocity, channel);
+
 				*ptr = true;
+				*ptr_peak = map(m_peak, m_thresholdMin, 1023, 1, 127);
 				
 				m_msec = 0;
 				m_state = 2;
@@ -115,6 +127,11 @@ public:
 	{
 		m_aftershockMillis = afterschockMillis;
 
+	}
+
+	int getThersholdMin()
+	{
+		return m_thresholdMin;
 	}
 
 	

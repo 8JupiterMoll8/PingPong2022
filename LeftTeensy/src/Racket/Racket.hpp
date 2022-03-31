@@ -48,6 +48,7 @@ public:
 	float swing_B_Gain() { return m_swing.B_Gain();}
 	//HIT
 	boolean isHit() { return m_piezo.isHit();}
+    int hitPeak()  { return m_piezo.hitPeak();}
 	int hitSum()    { return m_piezo.hitSum();}
 	void resetHitSum(){ m_piezo.resetHitSum();}
 	//ROLL PITCH YAW
