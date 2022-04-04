@@ -8,99 +8,114 @@ class CometRaw
 {
 
 public:
-  CometRaw(CRGB (&ledStrip)[360]): 
-  A_leds(ledStrip)
+  CometRaw(CRGB (&ledStrip)[360]) : _leds(ledStrip)
   {
-     m_iPos = 0;
-     m_startPosition = 0;
-     
-  } 
+  }
 
-  CometRaw(CRGB (&ledStrip)[360], int Reversedirection): 
-  A_leds(ledStrip)
+  public: void loop()
   {
-     m_iPos = NUM_LEDS - m_size;
-     m_startPosition = NUM_LEDS - m_size;
-     m_iDirection *= -1;
-     
-  } 
+    if (ms > 10)
+    {
+      ms = 0;
 
-  void loop()
-  {
- 
-     // CHECK FOR HIT WALL
+    _speed = _speed + _acceleration; 
+    _iPos += _iDirection * _speed;   
 
-     if (ms > 10)
-     {
-     
-
-       ms = 0;
-      m_speed = m_speed + m_acceleration;
-      m_iPos += m_iDirection * m_speed ; 
-   
-
-      //Serial.println(m_iPos);
-      //  Serial.println(NUM_LEDS - m_size);
-      //  Serial.println(m_iDirection);
-       if (int(m_iPos) >= (NUM_LEDS - m_size) || m_iPos <= 0)
-       {
-          //Serial.println(m_iPos);
-         //m_iDirection *= -1;
-         m_iPos = m_startPosition;
-         //m_acceleration = 0.01;
-        // m_speed        = 10.25;
+     if (this->hitWall())
+      {
+        this->setStartPosition(359.0);
         
-       }
+      }else
+      {
+        this->move();
+        this->fade();
 
-       // Move Forward
-       for (int i = 0; i < m_size; i++)
-       {
-         A_leds[(int)m_iPos + i] = CRGB(255, 255, 255);
-         usbMIDI.sendNoteOn(map(m_iPos,0,360,0,127), m_midiVelocity, 2);
-       }
+      }
 
-       // Randomly fade the LEDs
-       for (int j = 0; j < NUM_LEDS; j++)
-       {
-         if (random(10) > 5)
-         {
-             A_leds[j] = A_leds[j].fadeToBlackBy(m_fadeAmt);
+       
+     
+    }
+  }
+      
 
-         }
-        
-         
 
-         usbMIDI.sendNoteOff(map(j,0,360,0,127), 75, 2);
-       }
-     }
+/**
+ * Comet Behaviours
+ * 
+ */
+public:
+  void setStartPosition(float position ) { _iPos = position;    }
+  void setSpeed(float speed)     { _speed       = speed;        }
+  void setFadeSize(int fadeSize) { _fadeAmt     = fadeSize;     }
+  void setSize(int size)         { _size        = size;         }
+  void reverseDirection()        { _iDirection *= -1;           }
+  void setMidiVelocity(int v)    { _midiVelocity = v;           }
 
-  }// End Loop
+  auto getPosition(){ return _iPos;}
 
-  // Behaviours
-  void start()                   { m_animationCometStart = true; m_iPos = 0; }
-  void reverseDirection()        { m_iDirection *= -1;           }
-  void setSpeed(float speed)     { m_speed       = speed;        }
-  void setFadeSize(int fadeSize) { m_fadeAmt     = fadeSize;     }
-  void setSize(int size)         { m_size        = size;         }
-  void setMidiVelocity(int v)    { m_midiVelocity = v;           }
-
- 
-    // Check if Comet hits end and reverse Direction
- 
-  
+/**
+ * Move and accelerate the Comet
+ * 
+ */
 private:
-  CRGB (&A_leds)[360];
-  const int NUM_LEDS = 360;
- 
-  float   m_startPosition       = 0.0;
-  byte    m_fadeAmt             = 200;
-  int     m_size                = 7;
-  float   m_speed               = 1.25;
-  float   m_acceleration        = 0.001;
-  float   m_iPos                = 0.0;
-  float   m_iDirection          = 1.0;
-  byte    m_midiVelocity        = 75;
-  boolean m_animationCometStart = false;
+  void move()
+  {
+    for (int i = 0; i < _size; i++)
+    {
+      _leds[(int)_iPos + i] = CRGB(255, 255, 255); 
+      usbMIDI.sendNoteOn(map(_iPos, 0, 360, 0, 127), _midiVelocity, 2);
+    }
+  }
+
+/**
+ * Fade the End of the Comet
+ * This makes a COmet diferent from a constant line
+ * 
+ */
+private:
+  void fade()
+  {
+    for (int j = 0; j < _numLeds; j++)
+    {
+      if (random(10) > 5)
+      {
+        _leds[j] = _leds[j].fadeToBlackBy(_fadeAmt);
+      }
+      usbMIDI.sendNoteOff(map(j, 0, 360, 0, 127), 75, 2);
+    }
+  }
+
+/**
+ * Check if Comet Hit the end of the Boundaries'
+ * ! Important _iPos does never be -1.0 or 361.0
+ * 
+ */
+private:
+  boolean hitWall()
+  {
+    if (int(_iPos) >= 360 || int(_iPos) <= 0)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  
+
+private:
+  CRGB (&_leds)[360];
+  int      _numLeds           = 360;
+  float   _startPosition       = 0.0;
+  byte    _fadeAmt             = 200;
+  int     _size                = 7;
+  float   _speed               = 1.25;
+  float   _acceleration        = 0.001;
+  float   _iPos                = 0.0;
+  float   _iDirection          = 1.0;
+  byte    _midiVelocity        = 75;
+  boolean _animationCometStart = false;
 
   elapsedMillis ms;
 

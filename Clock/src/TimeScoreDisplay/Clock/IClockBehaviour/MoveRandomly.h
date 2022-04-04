@@ -20,7 +20,7 @@ public:
 
   virtual void setSpeed(int speed) override
   {
-    m_speed = speed;
+    _speed = speed;
   }
 };
 

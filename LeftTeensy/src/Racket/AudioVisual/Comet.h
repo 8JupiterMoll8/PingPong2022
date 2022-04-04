@@ -9,21 +9,19 @@ class Comet
 
 public:
   Comet(CRGB (&ledStrip)[360]): 
-  A_leds(ledStrip)
+  _leds(ledStrip)
   {
-      //m_iPos = 0.00;
-     // m_startPosition = 0;
-  
-  
+      //_iPos = 0.00;
+     // _startPosition = 0;
   } 
 
   Comet(CRGB (&ledStrip)[360], int start): 
-  A_leds(ledStrip)
+  _leds(ledStrip)
   {
-     // m_iPos = NUM_LEDS - m_size;
-      m_iPos = 360 - 1;
-      m_startPosition = 360 -1 ;
-      m_iDirection *= -1;
+     // _iPos = NUM_LEDS - _size;
+      _iPos          = 360 - 1;
+      _startPosition = 360 - 1 ;
+      _iDirection    *= -1;
   
   } 
 
@@ -33,40 +31,37 @@ public:
     {
     case WAIT:
       //Leave State:
-      if(m_animationCometStart == true) {
+      if(_animationCometStart == true) {
         state = START;
         Serial.print("Start Comet at Position : ");
-        Serial.println(m_iPos);
+        Serial.println(_iPos);
       } 
       break;
 
     case START:
       //Do:
       animationComet();
-       m_animationCometStart = false;
+       _animationCometStart = false;
        Serial.print(" Comet at Position : ");
-       Serial.println(m_iPos);
+       Serial.println(_iPos);
   
       //Leave State
       if(animationCometIsEnd()== true)
       {
        state = END; 
        Serial.print("End Comet at Position : ");
-       Serial.println(m_iPos);
-        
-       
-
+       Serial.println(_iPos);
       }
       break;
 
     case END:
       //Do:
-       m_animationCometStart = false;
+       _animationCometStart = false;
       //Leave State
       state = WAIT;
-        m_iPos = m_startPosition;
+      _iPos = _startPosition;
       Serial.print("Waiting to Start a Position : ");
-        Serial.println(m_iPos);
+      Serial.println(_iPos);
       break;
 
     default:
@@ -74,29 +69,29 @@ public:
     }
   }
   // Behaviours
-  void start()                   { m_animationCometStart = true; m_iPos = m_startPosition;  }
-  void reverseDirection()        { m_iDirection *= -1;           }
-  void setSpeed(float speed)     { m_speed       = speed;        }
-  void setFadeSize(int fadeSize) { m_fadeAmt     = fadeSize;     }
-  void setSize(int size)         { m_size        = size;         }
-  void setMidiVelocity(int v)    { m_midiVelocity = v;           }
+  void start()                   { _animationCometStart = true; _iPos = _startPosition;  }
+  void reverseDirection()        { _iDirection *= -1;           }
+  void setSpeed(float speed)     { _speed       = speed;        }
+  void setFadeSize(int fadeSize) { _fadeAmt     = fadeSize;     }
+  void setSize(int size)         { _size        = size;         }
+  void setMidiVelocity(int v)    { _midiVelocity = v;           }
 
   void animationComet()
   {
     if (ms > 10)
     {
       ms = 0;
-      m_speed  = m_speed +  m_acceleration;
-      m_iPos  += m_iDirection * m_speed;
-     // Serial.println(m_size);
+      _speed  = _speed +  _acceleration;
+      _iPos  += _iDirection * _speed;
+     // Serial.println(_size);
      
 
-      // Move Forward
-      for (int i = 0; i < m_size; i++)
+     
+      for (int i = 0; i < _size; i++)
       {
-        A_leds[(int)m_iPos + i] += CRGB(255, 255, 255);
-        int  n = map(m_iPos,0,360,0,127);
-        usbMIDI.sendNoteOn(n, m_midiVelocity, 2);
+        _leds[(int)_iPos + i] += CRGB(255, 255, 255); // Move Forward
+        int  n = map(_iPos,0,360,0,127);              
+        usbMIDI.sendNoteOn(n, _midiVelocity, 2);      //Make Sound
       }
 
       // Randomly fade the LEDs
@@ -104,32 +99,30 @@ public:
       {
         if (random(10) > 5)
         {
-          A_leds[j] += A_leds[j].fadeToBlackBy(m_fadeAmt);
+          _leds[j] += _leds[j].fadeToBlackBy(_fadeAmt);
           usbMIDI.sendNoteOff(j, 75, 2);
 
         } 
-  
-         
       }
     }
   }
   boolean animationCometIsEnd()
   {
-      Serial.println(m_size);
-   // int(m_iPos) = m_iPos;
+      Serial.println(_size);
+   // int(_iPos) = _iPos;
     // Check if Comet hits end and reverse Direction
-    //!Something with m_size is wrong i have to take look
-    //! Right now i change  (NUM_LEDS - m_size) to (NUM_LEDS - 1)
-    if (m_iPos > (NUM_LEDS - m_size ) || m_iPos < (float) 0.0)
+    //!Something with _size is wrong i have to take look
+    //! Right now i change  (NUM_LEDS - _size) to (NUM_LEDS - 1)
+    if (_iPos > (NUM_LEDS - _size ) || _iPos < (float) 0.0)
     {
-      m_iPos = 0;
-      m_iPos = 360;
+     // _iPos = 0;
+      _iPos = 360 - 1;
       //reverseDirection();
       Serial.print("HIT BORDER at ");
-      Serial.print(m_iPos);
-     // m_iPos = m_startPosition;
+      Serial.print(_iPos);
+     // _iPos = _startPosition;
       Serial.print("HIT BORDER at ");
-      Serial.print(m_iPos);
+      Serial.print(_iPos);
       FastLED.clear();
 
       return true;
@@ -142,19 +135,19 @@ public:
 
 
 private:
-  CRGB (&A_leds)[360];
+  CRGB (&_leds)[360];
   const int NUM_LEDS = 360;
  
 
-  byte    m_fadeAmt             = 124;
-  int     m_size                = 5;
-  float   m_speed               = 1.0;
-  float   m_acceleration        = 0.01;
-  float   m_iPos                = 0.0;
-  float   m_startPosition       = 0.0;
-  float   m_iDirection          = 1.0;
-  byte    m_midiVelocity        = 75;
-  boolean m_animationCometStart = false;
+  byte    _fadeAmt             = 124;
+  int     _size                = 5;
+  float   _speed               = 1.0;
+  float   _acceleration        = 0.01;
+  float   _iPos                = 0.0;
+  float   _startPosition       = 0.0;
+  float   _iDirection          = 1.0;
+  byte    _midiVelocity        = 75;
+  boolean _animationCometStart = false;
 
   elapsedMillis ms;
   enum States { WAIT, START, END};

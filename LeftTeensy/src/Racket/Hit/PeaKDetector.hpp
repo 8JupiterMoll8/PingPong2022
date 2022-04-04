@@ -52,11 +52,11 @@ public:
 		case 0:
 			if (m_inputSensor > m_thresholdMin)
 			{
-				Serial.print("begin peak track ");
-				Serial.println(m_inputSensor);
+				//Serial.print("begin peak track ");
+				//Serial.println(m_inputSensor);
 
-				Serial.print("m_thresholdMin : ");
-				Serial.println(m_thresholdMin);
+				//Serial.print("m_thresholdMin : ");
+				//Serial.println(m_thresholdMin);
 
 				m_peak = m_inputSensor;
 				m_msec = 0;

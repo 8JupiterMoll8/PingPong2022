@@ -23,7 +23,7 @@ public:
 
 protected:
   AccelStepper &Zeiger;
-  int m_speed;
+  int _speed;
 };
 
 #endif

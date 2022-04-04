@@ -9,13 +9,13 @@ class PingPongManger : public GameManager
 public:
     PingPongManger(Racket &leftRacket, Racket &rightRacket, Table &leftTable, Table &rightTable, Comet &comet) :
     GameManager(leftRacket, rightRacket, leftTable, rightTable),
-    m_comet(comet)
+    _comet(comet)
     {
     }
 
 private:
 
-Comet &m_comet;
+Comet &_comet;
 /*
  █████╗ ██╗   ██╗███████╗███████╗ ██████╗██╗  ██╗██╗      █████╗  ██████╗ 
 ██╔══██╗██║   ██║██╔════╝██╔════╝██╔════╝██║  ██║██║     ██╔══██╗██╔════╝ 

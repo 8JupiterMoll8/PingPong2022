@@ -9,7 +9,7 @@ class Bargraph
 private:
   CRGB(&m_A_ledStrip)[360];
   const float ledCount = 360.0;
-  float m_speed = 0;
+  float _speed = 0;
   float m_speed_max = 0.0;
   float m_speed_min = 30.0;
 
@@ -22,7 +22,7 @@ public:
   void loop()
   {
     // map the result to a range from 0 to the number of LEDs:
-    int ledLevel = map(m_speed, m_speed_min, m_speed_max, 0.0, ledCount);
+    int ledLevel = map(_speed, m_speed_min, m_speed_max, 0.0, ledCount);
 
     // Serial.println(ledLevel);
     // delay(10);
@@ -54,7 +54,7 @@ public:
 
   void setMapSpeed(float input, float min, float max)
   {
-    m_speed     = input;
+    _speed     = input;
     m_speed_min = min;
     m_speed_max = max;
   }

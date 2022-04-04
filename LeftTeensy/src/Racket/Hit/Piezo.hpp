@@ -9,36 +9,32 @@
 class Piezo
 {
 private:
-   PeakDetector         &m_peakDetecor;
-   Counter              &m_counter;
-   I_InputSensorBhv     *m_inputValue;
-   int m_piezoInput = 0;
+   PeakDetector         &_peakDetecor;
+   Counter              &_counter;
+   I_InputSensorBhv     *_inputValue;
+   int _piezoInput = 0;
    
 
 public:
  
 	Piezo(PeakDetector &peakDetector,Counter &counter,I_InputSensorBhv &inputValue):
-	m_peakDetecor(peakDetector),
-	m_counter(counter),
-    m_inputValue(&inputValue) 
-	{
-
-	}
+	_peakDetecor(peakDetector),
+	_counter(counter),
+    _inputValue(&inputValue) 
+	{}
 
 
 	void loop()
 	{
-		m_inputValue->loop();
-		m_peakDetecor.loop();
+		_inputValue->loop();
+		_peakDetecor.loop();
 
-	    
-        m_piezoInput = m_inputValue->getValue();
-		
-		m_peakDetecor.setInput(m_piezoInput);
+        _piezoInput = _inputValue->getValue();
+		_peakDetecor.setInput(_piezoInput);
 
-		if(m_peakDetecor.getHit())
+		if(_peakDetecor.getHit())
 		{
-			m_counter.add();
+			_counter.add();
 			//Serial.println("Hit");
 			//Serial.println(m_counter.getSum());
 		   
@@ -48,27 +44,28 @@ public:
 
 	int hitPeak()
 	{
-		return m_peakDetecor.getHitPeak();
+		return _peakDetecor.getHitPeak();
 
 	}
 
-	void countHit(){
-		m_counter.add();
+	void countHit()
+	{
+		_counter.add();
 	}
 
 	boolean isHit(){
-		return m_peakDetecor.getHit(); 
+		return _peakDetecor.getHit(); 
 	}
 
 	int hitSum()
 	{
-		return m_counter.getSum();
+		return _counter.getSum();
 
 	}
 
 	void resetHitSum()
 	{
-		m_counter.reset();
+		_counter.reset();
 	}
 };
 #endif

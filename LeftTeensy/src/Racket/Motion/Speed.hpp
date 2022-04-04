@@ -7,7 +7,7 @@ class Speed
 {
 private:
 	ReciverData &m_reciverData;
-	float m_speed ;
+	float _speed ;
 	float m_speedSmooth ;
 	float m_smoothSensitivity = 100;
 
@@ -19,41 +19,28 @@ public:
 
 	void loop()
 	{
-		calculateTotalSpeed();
-		smoothTotalSpeed();
+		calculateTotal();
+		smoothTotal();
 	}
 
-	float smooth()
-	{
-		return m_speedSmooth;
-
-	}
-
-	int setSmoothSensivity(int smoothSensivity)
-	{
-		return m_smoothSensitivity = smoothSensivity;
-	}
-
-	float getNormal()
-	{
-		return m_speed ;
-
-	}
+	auto smooth()                               { return m_speedSmooth; }
+    auto setSmoothSensivity(int smoothSensivity){ return m_smoothSensitivity = smoothSensivity;}
+    auto getNormal()                            { return _speed ;                              }
 
 private:                   
-	void smoothTotalSpeed()
+	void smoothTotal()
 	{
 		float sensitivity = 100; // a total of 540 degrees per second or greater between all axes will apply the loudest swing sound
-		m_speedSmooth= min(1.0f, calculateTotalSpeed() / sensitivity);
+		m_speedSmooth= min(1.0f, calculateTotal() / sensitivity);
 		
 	}
 
  
 
-	float  calculateTotalSpeed()
+	float  calculateTotal()
 	{
-		m_speed = sqrtf(powf(m_reciverData.gx, 2) + powf(m_reciverData.gy, 2) + powf(m_reciverData.gz, 2));
-		return m_speed;
+		_speed = sqrtf(powf(m_reciverData.gx, 2) + powf(m_reciverData.gy, 2) + powf(m_reciverData.gz, 2));
+		return _speed;
 
 	}
 };

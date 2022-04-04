@@ -4,41 +4,24 @@
 #include "ReciverData.hpp"
 class Swing
 {
+
+public:
+	Swing(ReciverData &ReciverData) : m_reciverData(ReciverData) {}
+
+	void loop(){
+		 calculateSwing(nCurrentTime, m_reciverData.gx, m_reciverData.gy, m_reciverData.gz);
+	}
+
+	auto A_Gain()   { return m_A_Gain;  }
+    auto B_Gain()   { return m_B_Gain;  }
+	auto Hum_Gain() { return m_Hum_Gain;}
+
 private:
 	ReciverData &m_reciverData;
 	elapsedMillis nCurrentTime;
     float m_A_Gain ;
 	float m_B_Gain ;
 	float m_Hum_Gain;
-
-public:
-	Swing(ReciverData &ReciverData) : m_reciverData(ReciverData)
-	{
-	}
-
-	void loop()
-	{
-		 calculateSwing(nCurrentTime, m_reciverData.gx, m_reciverData.gy, m_reciverData.gz);
-	}
-
-	float A_Gain()
-	{
-		return m_A_Gain;
-
-	}
-
-	float B_Gain()
-	{
-		return m_B_Gain;
-
-	}
-
-	float Hum_Gain()
-	{
-		return m_Hum_Gain;
-
-	}
-
 private:
 	void calculateSwing(float msTime, float gx, float gy, float gz)
 	{

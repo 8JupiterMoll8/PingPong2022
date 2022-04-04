@@ -10,11 +10,12 @@ class GameManager
 {
 protected:
 
-Racket  &m_leftRacket;
-Racket &m_rightRacket;
-Table       &m_leftTable;
-Table       &m_rightTable;
-int         m_totalBallWechselCounter = 0;
+Racket &_leftRacket;
+Racket &_rightRacket;
+Table  &_leftTable;
+Table  &_rightTable;
+
+int _totalBallWechselCounter = 0;
 
 protected:
 virtual void lr_hitAufschlag() = 0;
@@ -60,12 +61,11 @@ virtual void ok_Ballwachsel() = 0;
 
 public:
     GameManager(Racket &leftRacket, Racket &rightRacket, Table &leftTable, Table&rightTable):
-    m_leftRacket(leftRacket),
-    m_rightRacket(rightRacket),
-    m_leftTable(leftTable),
-    m_rightTable(rightTable)
-    {
-    }
+    _leftRacket(leftRacket),
+    _rightRacket(rightRacket),
+    _leftTable(leftTable),
+    _rightTable(rightTable)
+    {}
 
   
 
@@ -88,7 +88,7 @@ public:
         case START:
 
             Serial.println("STARTE SPIEL");
-            Serial.println("State 1.) AUFSCHLAG : Warte dass, der Ball trift LEFT RACKET trift");
+            Serial.println("State 1.) AUFSCHLAG : Warte dass, der Ball trifft LEFT RACKET trifft");
 
             // printGameStatus();
             resetAllCounters();
@@ -113,10 +113,9 @@ public:
         case lr_AS:
             // Do
             // Leave State:
-            if (m_leftRacket.hitSum() == 1)
-            {
-                Serial.println("AUFSCHLAG : BAll trift Left Racket");
-                Serial.println("State 2.)AUFSCHLAG : Warte das BAll trift LEFT TABLE");
+            if (_leftRacket.hitSum() == 1){
+                Serial.println("AUFSCHLAG : BAll trifft Left Racket");
+                Serial.println("State 2.)AUFSCHLAG : Warte das BAll trifft LEFT TABLE");
                 
                 lr_hitAufschlag();
                 resetAllCounters();
@@ -127,22 +126,19 @@ public:
 
         case lt_AS:
             //Leave State Error Check:
-            if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_rightTable.hitSum() == 1  )
-                {
+            if (_leftRacket.hitSum() == 1 || _rightRacket.hitSum() == 1 || _rightTable.hitSum() == 1  ){
                     Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
                     state = START;
                     resetAllCounters();
                 }
             //Leave State:
-            if (m_leftTable.hitSum() == 1)
-            {
-                Serial.println("AUFSCHLAG : BAll trift Left Table");
-                Serial.println("State 3.) AUFSCHLAG : Warte das BAll trift RIGHT TABLE");
+            if (_leftTable.hitSum() == 1){
+                Serial.println("AUFSCHLAG : BAll trifft Left Table");
+                Serial.println("State 3.) AUFSCHLAG : Warte das BAll trifft RIGHT TABLE");
 
                 lt_hitAufschalg();
                 // printGameStatus();
-
                 resetAllCounters();
                 state = rt_AS;
             }
@@ -150,7 +146,7 @@ public:
 
         case rt_AS:
             //Leave State Error Check:
-            if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
+            if ( _leftRacket.hitSum() == 1 || _rightRacket.hitSum() == 1 || _leftTable.hitSum() == 1  )
                 {
                     Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
@@ -158,11 +154,11 @@ public:
                     resetAllCounters();
                 }
             //Leave State:
-            if (m_rightTable.hitSum() == 1)
+            if (_rightTable.hitSum() == 1)
             {
                 
-                Serial.println("AUFSCHLAG : BAll trift Right Table");
-                Serial.println("AUFSCHLAG : Warte das BAll trift RIGHT RACKET");
+                Serial.println("AUFSCHLAG : BAll trifft Right Table");
+                Serial.println("AUFSCHLAG : Warte das BAll trifft RIGHT RACKET");
                 
                 rt_hitAufschlag();
                  
@@ -174,23 +170,23 @@ public:
 
         case rr_AS:
             //Leave State Error Check:
-            if (m_leftRacket.hitSum() == 1 || m_rightTable.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
-                {
-                    Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    error();
-                    state = START;
-                    resetAllCounters();
-                }
+            if (_leftRacket.hitSum() == 1 || _rightTable.hitSum() == 1 || _leftTable.hitSum() == 1)
+            {
+                Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                error();
+                state = START;
+                resetAllCounters();
+            }
             //Leave State:     
-            if (m_rightRacket.hitSum() == 1)
+            if ( _rightRacket.hitSum() == 1 )
             {
                 rr_hitAufschlag();
                  
              
-                Serial.println("AUFSCHLAG : BAll trift Right Racket");
+                Serial.println("AUFSCHLAG : BAll trifft Right Racket");
                 Serial.println("AUFSCHLAG Erfolgreich");
                 Serial.println("Starte Ballwechsel");
-                Serial.println("BAllWechsel : Warte das BAll trift LEFT TABLE");
+                Serial.println("BAllWechsel : Warte das BAll trifft LEFT TABLE");
 
                 // printGameStatus();
                 resetAllCounters();
@@ -208,7 +204,7 @@ public:
       */
         case lt_BW:
             //Leave State Error Check:
-            if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_rightTable.hitSum() == 1  )
+            if (_leftRacket.hitSum() == 1 || _rightRacket.hitSum() == 1 ||_rightTable.hitSum() == 1  )
                 {
                     Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
@@ -216,11 +212,11 @@ public:
                     resetAllCounters();
                 }
             //Leave State:
-            if (m_leftTable.hitSum() == 1) // Hit Left Table
+            if (_leftTable.hitSum() == 1) // Hit Left Table
             {
                 lt_hitBallwechsel();
 
-                Serial.println("Ballwechsel : Warte das BAll trift LEFT RACKET");
+                Serial.println("Ballwechsel : Warte das BAll trifft LEFT RACKET");
 
                 resetAllCounters();
                 state = lr_BW;
@@ -229,7 +225,7 @@ public:
 
         case lr_BW:
             //Leave State Error Check:
-            if (m_leftTable.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
+            if (_leftTable.hitSum() == 1 || _rightRacket.hitSum() == 1 ||_leftTable.hitSum() == 1  )
                 {
                     Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
@@ -237,10 +233,10 @@ public:
                     resetAllCounters();
                 }
             // Leave State:
-            if (m_leftRacket.hitSum() == 1) // Hit Left RACket
+            if (_leftRacket.hitSum() == 1) // Hit Left RACket
             {
                 lr_hitBallwechsel();
-                Serial.println("Ballwechsel : Warte das BAll trift RIGHT TABLE");
+                Serial.println("Ballwechsel : Warte das BAll trifft RIGHT TABLE");
 
                 resetAllCounters();
                 state = rt_BW;
@@ -249,7 +245,7 @@ public:
 
         case rt_BW:
             //Leave State Error Check:
-            if (m_leftRacket.hitSum() == 1 || m_rightRacket.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
+            if (_leftRacket.hitSum() == 1 || _rightRacket.hitSum() == 1 ||_leftTable.hitSum() == 1  )
                 {
                     Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
@@ -257,10 +253,10 @@ public:
                     resetAllCounters();
                 }
             // Leave State:
-            if (m_rightTable.hitSum() == 1) // Hit Right Table
+            if (_rightTable.hitSum() == 1) // Hit Right Table
             {
                 rt_hitBallwechsel();
-                Serial.println("Ballwechsel : Warte das BAll trift RIGHT RACKET");
+                Serial.println("Ballwechsel : Warte das BAll trifft RIGHT RACKET");
 
                 resetAllCounters();
                 state = rr_BW;
@@ -269,7 +265,7 @@ public:
 
         case rr_BW:
             //Leave State Error Check:
-            if (m_leftRacket.hitSum() == 1 || m_rightTable.hitSum() == 1 ||m_leftTable.hitSum() == 1  )
+            if (_leftRacket.hitSum() == 1 || _rightTable.hitSum() == 1 ||_leftTable.hitSum() == 1  )
                 {
                     Serial.println("!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     error();
@@ -277,7 +273,7 @@ public:
                     resetAllCounters();
                 }
             //  Leave State:
-            if (m_rightRacket.hitSum() == 1) // Hit Right Racket
+            if (_rightRacket.hitSum() == 1) // Hit Right Racket
             {
                rr_hitBallwechsel();
                 Serial.println("Ballwechsel : Erfolgreich");
@@ -291,8 +287,8 @@ public:
             // Do
 
             Serial.print("TOTAL- Ballwechsel : ");
-            Serial.println(++m_totalBallWechselCounter);
-            Serial.println("BAllWechsel : Warte das BAll trift LEFT TABLE");
+            Serial.println(++_totalBallWechselCounter);
+            Serial.println("BAllWechsel : Warte das BAll trifft LEFT TABLE");
             ok_Ballwachsel();
           
             // Leave State:
@@ -318,18 +314,18 @@ private:
     // Reset all Counters to Zero(0)
     void resetAllCounters()
     {
-        m_leftRacket.resetHitSum();
-        m_rightRacket.resetHitSum();
-        m_leftTable.resetHitSum();
-        m_rightTable.resetHitSum();
+        _leftRacket.resetHitSum();
+        _rightRacket.resetHitSum();
+        _leftTable.resetHitSum();
+        _rightTable.resetHitSum();
     }
 
     void printGameStatus()
     {
-        Serial.print(m_leftRacket.hitSum());
-        Serial.print(m_leftTable.hitSum());
-        Serial.print(m_rightRacket.hitSum());
-        Serial.print(m_rightTable.hitSum());
+        Serial.print(_leftRacket.hitSum());
+        Serial.print(_leftTable.hitSum());
+        Serial.print(_rightRacket.hitSum());
+        Serial.print(_rightTable.hitSum());
         Serial.println("");
     }
 };

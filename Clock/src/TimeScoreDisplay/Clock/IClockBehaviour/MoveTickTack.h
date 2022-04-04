@@ -17,7 +17,7 @@ public:
     MoveTickTack(AccelStepper &Axis) : 
     IMoveBehaviour(Axis)
     {
-         m_speed = 1000;
+         _speed = 1000;
     }
 
     virtual void loop() override
@@ -33,7 +33,7 @@ public:
 
 virtual void setSpeed(int speed) override
   {
-    m_speed = speed;
+    _speed = speed;
   }
 
 private:
@@ -41,7 +41,7 @@ private:
     {
         static boolean toogle = false;
 
-        if (ms > m_speed)
+        if (ms > _speed)
         {
             ms = 0;
             toogle = !toogle;
@@ -49,13 +49,13 @@ private:
             if (toogle == true)
             {
                 incrementSpeed = 9000;
-                m_speed = 100;
+                _speed = 100;
                 usbMIDI.sendNoteOff(120, 127, 11);
             }
             else
             {
                 incrementSpeed = 0;
-                m_speed = 500;
+                _speed = 500;
                 usbMIDI.sendNoteOn(120, 127, 11);
             }
         }

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <FastLED.h>
+#include "FastLED.h"
 #include <SPI.h>
 #include "printf.h"
 #include "RF24.h"
@@ -59,9 +59,10 @@ ETSENDATA mydata;
 const int NUM_LEDS  = 360;
 CRGB LedStrip[NUM_LEDS];
 void blinkAll(void);
+void fadeall(void);
+void cylon(void);
 
-CometRaw cometRaw(LedStrip,1);
-CometRaw cometRaw2(LedStrip);
+CometRaw cometRaw(LedStrip);
 
 
 
@@ -231,6 +232,9 @@ Table rightTable(rt_Piezo);
 */
   PingPongManger pingpongManager(leftRacket,rightRacket,leftTable,rightTable,comet);
 
+
+
+ 
 /*
 ███████╗███████╗████████╗██╗   ██╗██████╗  ██╗██╗
 ██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗██╔╝╚██╗
@@ -239,18 +243,15 @@ Table rightTable(rt_Piezo);
 ███████║███████╗   ██║   ╚██████╔╝██║     ╚██╗██╔╝
 ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝      ╚═╝╚═╝
  */
+
+void peakHit( const Table &table);
 void setup()
 {
   // Init Serial
   Serial.begin(115200);
   Serial1.begin(115200);
-  while (!Serial)
-  {
-  }
-  /**
-   * 
-   * @param  {} undefined : 
-   */
+  while (!Serial){}
+
   // Int Easy Transfer
   ET.begin(details(mydata), &Serial1);
 
@@ -259,7 +260,7 @@ void setup()
   pinMode(26,OUTPUT);
   pinMode(27,OUTPUT);
   LEDS.addLeds<SK9822, 26, 27, RGB, DATA_RATE_MHZ(10) >(LedStrip, NUM_LEDS);  // BGR ordering is typical
-  LEDS.setBrightness(84);
+  LEDS.setBrightness(255);
 
   // Init RF24 Reciver
   pinMode(lr_CE_PIN, OUTPUT);
@@ -271,6 +272,12 @@ void setup()
   rr_RF24_Reciver.setup();
   digitalWrite(rr_CSN_PIN, HIGH);
   lr_RF24_Reciver.setup();
+
+  FastLED.clear();
+
+  // Init Comet
+  cometRaw.setStartPosition(359);
+  cometRaw.reverseDirection();
 
 }
 
@@ -304,15 +311,17 @@ rightTable.loop();
 //swingController.loop();
 //swingController2.loop();
 //cometRaw.loop();
-//cometRaw2.loop();
-//FastLED.show();
+cometRaw.loop();
+Serial.println(cometRaw.getPosition());
+
+FastLED.show();
 
 
 ////////////////////////////////////////////////////////////
 // EASY_TRANSFER
-mydata.leftRacketHit   = leftRacket.isHit();
-mydata.leftRacketSpeed = 1001;
-mydata.leftTableHit    = leftTable.isHit();
+mydata.leftRacketHit    = leftRacket.isHit();
+mydata.leftRacketSpeed  = 1001;
+mydata.leftTableHit     = leftTable.isHit();
 
 mydata.rightRacketHit   = rightRacket.isHit();
 mydata.rightRacketSpeed = rightRacket.speed();
@@ -320,69 +329,25 @@ mydata.rightTableHit    = rightTable.isHit();
 ET.sendData();
 
 
-// //Debuging Hits
-//if(rightTable.isHit())  Serial.println("Hit Right TAble");
+// HIT TABLE TO MIDI SENSSITIVE
 
-//delay(10);
 
-// if(leftTable.isHit()) {
-//   Serial.print("Hit Left TAble");
-//   Serial.println(lt_PiezoInput.getValue());
-
-// }  
-//if(rightRacket.isHit()) Serial.println("Hit Right Racket");
-//if(leftRacket.isHit())  Serial.println("Hit LEft Racket");
+peakHit(rightTable);
+//peakHit(leftTable);
 
 
 
-static int rnd_Note;
 
-if(lr_Piezo.isHit())
-{
-  rnd_Note = random(50,124);
-  Serial.print("Hit PEak:");
-  int velocity = lr_Piezo.hitPeak();
-
-  Serial.println(velocity);
-  usbMIDI.sendNoteOn(rnd_Note, velocity, 10);
-
-}else
-{
-    usbMIDI.sendNoteOff(rnd_Note, 0, 10);
-}
-
-
-//blinkAll();
 ////////////////////////////////////////////////////////////
 // End Loop
 }
 
-void blinkAll()
-{
-  if (rightTable.isHit())
-  {
-    int a = rt_PiezoDetector.getThersholdMin();
-    Serial.println(a);
-    int b = rt_PiezoSmoother.getValue();
-    Serial.println(b);
-
-    for (int i = 0; i < NUM_LEDS; i++)
-    {
-      LedStrip[i].setRGB(255, 255, 255);
-
-    }
-    usbMIDI.sendNoteOn(72,127,13);
-    
+void peakHit(const Table &table){
+  if (table.isHit()){
+    int peak = table.hitPeak();
+    Serial.println(peak);
+    usbMIDI.sendNoteOn(72,peak,10);
+  }else{
+    usbMIDI.sendNoteOff(72,0,10);
   }
-  else
-  {
-    for (int i = 0; i < NUM_LEDS; i++)
-    {
-      LedStrip[i].setRGB(0, 0, 0);
-    }
-
-     usbMIDI.sendNoteOn(72,0,13);
-  }
-
-  FastLED.show();
 }

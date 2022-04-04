@@ -10,11 +10,11 @@ class Racket
 {
 private:
 	//Hit Behaviour
-	Piezo &m_piezo;
+	Piezo &_piezo;
 	//Motion Behaviour
-	Speed &m_speed;
-	Swing &m_swing;
-	Mahony &m_mahony;
+	Speed  &_speed;
+	Swing  &_swing;
+	Mahony &_mahony;
 	//Button Behaviour
 	Pressure &m_pressure;
 
@@ -22,41 +22,45 @@ private:
 
 public:
 	Racket(Piezo &piezo,  Speed &speed, Swing &swing, Mahony &mahony, Pressure &pressure): 
-	m_piezo(piezo),
-    m_speed(speed),
-	m_swing(swing),
-	m_mahony(mahony),
+	_piezo(piezo),
+    _speed(speed),
+	_swing(swing),
+	_mahony(mahony),
     m_pressure(pressure)
 	{
 		
 	}
-	
-
-	void loop()
-	{
-     	m_piezo.loop();
-		m_swing.loop();
-		m_speed.loop();
-		m_mahony.loop();
-		m_pressure.loop();
+	// LOOP
+	auto loop(){
+     	_piezo.loop();
+		_swing.loop();
+		_speed.loop();
+		_mahony.loop();
+    	m_pressure.loop();
 	}
 
+	/*BEHAVIOURS*/
 	//SPEED
-	float speed(){ return m_speed.getNormal();};
+	auto speed() { return _speed.getNormal();};
+
 	//SWING
-	float swing_A_Gain() { return m_swing.A_Gain();}
-	float swing_B_Gain() { return m_swing.B_Gain();}
+	auto swing_A_Gain() { return _swing.A_Gain();  }
+	auto swing_B_Gain() { return _swing.B_Gain();  }
+
 	//HIT
-	boolean isHit() { return m_piezo.isHit();}
-    int hitPeak()  { return m_piezo.hitPeak();}
-	int hitSum()    { return m_piezo.hitSum();}
-	void resetHitSum(){ m_piezo.resetHitSum();}
+	auto isHit()   { return _piezo.isHit();    }
+    auto hitPeak() { return _piezo.hitPeak();  }
+	auto hitSum()  { return _piezo.hitSum();   }
+
+	auto resetHitSum( ){ _piezo.resetHitSum(); }
+
 	//ROLL PITCH YAW
-	float roll()  { return m_mahony.roll(); }
-	float pitch() { return m_mahony.pitch();}
-	float yaw()   { return m_mahony.yaw();}
+	auto roll()  { return _mahony.roll();  }
+	auto pitch() { return _mahony.pitch(); }
+	auto yaw()   { return _mahony.yaw();   }
+	
 	//PRESSURE BUTTON
-	int pressure(){ return m_pressure.value();}
+	auto pressure(){ return m_pressure.value(); }
 	
 };
 #endif
